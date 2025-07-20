@@ -9,7 +9,7 @@
 #include <memory>
 #include "IVoxelStorage.h"
 #include "voxelEngine/voxelWorld/storage/DenseVoxelStorage.h"
-#include "../../../../src/voxelEngine/voxelWorld/utils/DirectionUtils.h"
+#include "voxelEngine/voxelWorld/utils/DirectionUtils.h"
 
 class VoxelChunk {
 public:

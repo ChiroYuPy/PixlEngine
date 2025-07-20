@@ -3,7 +3,7 @@
 //
 
 #include <stdexcept>
-#include "DirectionUtils.h"
+#include "voxelEngine/voxelWorld/utils/DirectionUtils.h"
 
 namespace DirectionUtils {
     CubicDirection getOpposite(CubicDirection direction) {
