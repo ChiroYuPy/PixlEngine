@@ -57,6 +57,8 @@ set(SOURCES
         include/voxelEngine/voxelWorld/storage/PaletteVoxelStorage.h
         src/voxelEngine/CameraController.cpp
         include/voxelEngine/CameraController.h
+        src/voxelEngine/voxelWorld/utils/DirectionUtils.cpp
+        src/voxelEngine/voxelWorld/utils/DirectionUtils.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)
