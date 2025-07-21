@@ -11,22 +11,17 @@
 
 struct Voxel {
 
-    VoxelType::ID ID;
+    voxel::VoxelID ID;
 
     Voxel();
-    explicit Voxel(uint8_t id);
 
-    bool isAir() const;
-    bool operator==(const Voxel& other) const;
+    explicit Voxel(voxel::VoxelID id);
+
+    [[nodiscard]] bool operator==(const Voxel& other) const;
+
+    [[nodiscard]] bool operator!=(const Voxel& other) const;
+
+    [[nodiscard]] explicit operator voxel::VoxelID() const;
 };
-
-namespace std {
-    template<>
-    struct hash<Voxel> {
-        std::size_t operator()(const Voxel& voxel) const {
-            return std::hash<uint8_t>()(voxel.ID);
-        }
-    };
-}
 
 #endif //PIXLENGINE_VOXEL_H

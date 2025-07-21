@@ -4,14 +4,20 @@
 
 #include "voxelEngine/voxelWorld/voxel/Voxel.h"
 
-Voxel::Voxel() : ID(VoxelType::AIR) {}
+Voxel::Voxel()
+        : ID(voxel::AIR) {}
 
-Voxel::Voxel(VoxelType::ID id) : ID(id) {}
-
-bool Voxel::isAir() const {
-    return ID == VoxelType::AIR;
-}
+Voxel::Voxel(voxel::VoxelID id)
+        : ID(id) {}
 
 bool Voxel::operator==(const Voxel &other) const {
     return ID == other.ID;
+}
+
+bool Voxel::operator!=(const Voxel &other) const {
+    return ID != other.ID;
+}
+
+Voxel::operator voxel::VoxelID() const {
+    return ID;
 }

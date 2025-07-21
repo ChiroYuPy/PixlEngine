@@ -21,7 +21,7 @@ bool Application::initialize() {
     // Créer et initialiser la fenêtre
     m_window = std::make_unique<Window>();
     WindowConfig config;
-    config.title = "Voxel Engine";
+    config.title = "voxel Engine";
     config.width = 1024;
     config.height = 768;
 

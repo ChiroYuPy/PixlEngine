@@ -41,20 +41,12 @@ set(SOURCES
         include/voxelEngine/voxelWorld/world/VoxelWorld.h
         src/voxelEngine/voxelWorld/chunk/VoxelChunk.cpp
         include/voxelEngine/voxelWorld/chunk/VoxelChunk.h
-        src/voxelEngine/voxelWorld/chunk/IVoxelStorage.cpp
-        include/voxelEngine/voxelWorld/chunk/IVoxelStorage.h
-        src/voxelEngine/voxelWorld/world/IChunkStorage.cpp
-        include/voxelEngine/voxelWorld/world/IChunkStorage.h
-        src/voxelEngine/voxelWorld/storage/DenseVoxelStorage.cpp
-        include/voxelEngine/voxelWorld/storage/DenseVoxelStorage.h
-        src/voxelEngine/voxelWorld/storage/MapChunkStorage.cpp
-        include/voxelEngine/voxelWorld/storage/MapChunkStorage.h
+        src/voxelEngine/voxelWorld/storage/VoxelArray.cpp
+        include/voxelEngine/voxelWorld/storage/VoxelArray.h
         src/voxelEngine/voxelWorld/voxel/Voxel.cpp
         include/voxelEngine/voxelWorld/voxel/Voxel.h
         src/voxelEngine/voxelWorld/voxel/VoxelType.cpp
         include/voxelEngine/voxelWorld/voxel/VoxelType.h
-        src/voxelEngine/voxelWorld/storage/PaletteVoxelStorage.cpp
-        include/voxelEngine/voxelWorld/storage/PaletteVoxelStorage.h
         src/voxelEngine/CameraController.cpp
         include/voxelEngine/CameraController.h
         src/voxelEngine/voxelWorld/utils/DirectionUtils.cpp

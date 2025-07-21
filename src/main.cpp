@@ -19,7 +19,7 @@ int main() {
         return -1;
     }
 
-    std::cout << "Starting Voxel Engine..." << std::endl;
+    std::cout << "Starting voxel Engine..." << std::endl;
     app.run();
     app.shutdown();
 

@@ -3,6 +3,7 @@
 //
 
 #include <random>
+#include <iostream>
 #include "voxelEngine/ChunkScene.h"
 #include "voxelEngine/voxelWorld/chunk/VoxelChunk.h"
 #include "utils/Logger.h"
@@ -18,39 +19,24 @@ bool ChunkScene::initialize() {
 
     m_chunkShader = std::make_unique<Shader>();
 
-    m_blockColors = {
-            glm::vec3(),                            // 0 = air
-            glm::vec3(1.0f, 0.0f, 0.0f),   // 1 = red
-            glm::vec3(0.0f, 1.0f, 0.0f),   // 2 = green
-            glm::vec3(0.0f, 0.0f, 1.0f),   // 3 = blue
-            glm::vec3(1.0f, 0.0f, 1.0f)    // 4 = purple
-    };
-
     if (!m_chunkShader->loadFromFiles("resources/shaders/chunk.vert", "resources/shaders/chunk.frag")) return false;
 
-    // Générer un chunk de test (plein sauf en haut)
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distAir(0, 4);  // 0 = air, 1-4 = types de blocs
+    // Initialisation du ChunkStorage
+    m_world = std::make_unique<VoxelWorld>();
 
-    const double voxelMemoryUsage = sizeof(Voxel);
-    Logger::warn(std::format("voxel memoryUsage: {}", voxelMemoryUsage));
+    // Création de quelques chunks pour le test
+    VoxelChunk* c1 = m_world->getOrCreateChunk(0, 0, 0);
+    VoxelChunk* c2 = m_world->getOrCreateChunk(1, 0, 0);
+    VoxelChunk* c3 = m_world->getOrCreateChunk(0, 0, 1);
 
-    m_chunk = std::make_unique<DenseVoxelStorage>();
+    c1->fill(voxel::GRASS);
 
-    uint8_t id = 0;
-    for (int x = 0; x < IVoxelStorage::SIZE; ++x)
-        for (int y = 0; y < IVoxelStorage::SIZE; ++y)
-            for (int z = 0; z < IVoxelStorage::SIZE; ++z) {
-                m_chunk->set(x, y, z, Voxel{id});
-                id = 1 + (id % (m_blockColors.size() - 1));
-                // id = (id + 1) % 256;
-            }
+    c1->set(0, 0, 0, Voxel{voxel::STONE});
 
-    const double chunkMemoryUsage = m_chunk->getMemoryUsage();
-    Logger::warn(std::format("chunk memoryUsage: {}", chunkMemoryUsage));
+    std::cout << "ID: " << voxel::getVoxelDisplayName(c1->get(0, 0, 0).ID) << std::endl;
 
-    buildChunkMesh();
+    // Construire le mesh pour tous les chunks chargés
+    buildAllChunksMesh();
 
     input->setKeyCallback([this](int key, KeyState state) {
         if (key == GLFW_KEY_ESCAPE && state == KeyState::Pressed) {
@@ -79,56 +65,114 @@ void ChunkScene::render() {
     auto* renderer = Application::getInstance().getRenderer();
     auto* window = Application::getInstance().getWindow();
 
-    auto model = glm::mat4(1.0f);
     glm::mat4 view = m_camera->getViewMatrix();
     glm::mat4 proj = m_camera->getProjectionMatrix(window->getAspectRatio());
 
     m_chunkShader->use();
-    m_chunkShader->setMat4("u_Model", model);
     m_chunkShader->setMat4("u_View", view);
     m_chunkShader->setMat4("u_Projection", proj);
 
-    renderer->drawMesh(*m_chunkMesh, *m_chunkShader, model);
+    // Rendu de tous les chunks
+    renderAllChunks(view, proj);
 }
 
 void ChunkScene::shutdown() {
-    m_chunkMesh.reset();
+    m_chunkMeshes.clear();
     m_chunkShader.reset();
     m_camera.reset();
+    m_world.reset();
 }
 
-void ChunkScene::buildChunkMesh() {
+void ChunkScene::buildAllChunksMesh() {
+    m_chunkMeshes.clear();
+
+    // Construire le mesh pour chaque chunk chargé
+    m_world->forEachChunk([this](const ChunkCoord& coord, VoxelChunk* chunk) {
+        buildChunkMesh(coord, chunk);
+    });
+}
+
+void ChunkScene::buildChunkMesh(const ChunkCoord& chunkCoord, VoxelChunk* chunk) {
+    if (!chunk) return;
+
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
-    for (int x = 0; x < IVoxelStorage::SIZE; ++x)
-        for (int y = 0; y < IVoxelStorage::SIZE; ++y)
-            for (int z = 0; z < IVoxelStorage::SIZE; ++z) {
-                Voxel voxel = m_chunk->get(x, y, z);
+    // Offset de position du chunk dans le monde
+    glm::vec3 chunkOffset(
+            chunkCoord.x * VoxelArray::SIZE,
+            chunkCoord.y * VoxelArray::SIZE,
+            chunkCoord.z * VoxelArray::SIZE
+    );
+
+    for (int x = 0; x < VoxelArray::SIZE; ++x) {
+        for (int y = 0; y < VoxelArray::SIZE; ++y) {
+            for (int z = 0; z < VoxelArray::SIZE; ++z) {
+                Voxel voxel = chunk->get(x, y, z);
                 if (voxel.ID == 0) continue;
 
-                glm::vec3 pos(x, y, z);
-                glm::vec3 color = m_blockColors[voxel.ID];
+                glm::vec3 pos = chunkOffset + glm::vec3(x, y, z);
+                uint32_t hexColor = voxel::getVoxelColorRGBA(voxel.ID);
+
+                float r = ((hexColor >> 16) & 0xFF) / 255.0f;
+                float g = ((hexColor >> 8)  & 0xFF) / 255.0f;
+                float b = ((hexColor >> 0)  & 0xFF) / 255.0f;
+                glm::vec3 color = glm::vec3(r, g, b);
 
                 for (int face = 0; face < 6; ++face) {
-                    glm::ivec3 offset = getFaceOffset(face);
-                    int nx = x + offset.x;
-                    int ny = y + offset.y;
-                    int nz = z + offset.z;
-
-                    bool exposed = (nx < 0 || ny < 0 || nz < 0 ||
-                                    nx >= IVoxelStorage::SIZE || ny >= IVoxelStorage::SIZE || nz >= IVoxelStorage::SIZE ||
-                                    m_chunk->get(nx, ny, nz).ID == VoxelType::AIR);
-
-                    if (exposed)
+                    if (isFaceExposed(chunkCoord, chunk, x, y, z, face)) {
                         MeshGenerator::addCubeFace(vertices, indices, pos, face, color);
+                    }
                 }
             }
+        }
+    }
 
-    m_chunkMesh = std::make_unique<Mesh>();
-    m_chunkMesh->setVertices(vertices);
-    m_chunkMesh->setIndices(indices);
-    m_chunkMesh->upload();
+    if (!vertices.empty()) {
+        auto mesh = std::make_unique<Mesh>();
+        mesh->setVertices(vertices);
+        mesh->setIndices(indices);
+        mesh->upload();
+        m_chunkMeshes[chunkCoord] = std::move(mesh);
+    }
+}
+
+bool ChunkScene::isFaceExposed(const ChunkCoord& chunkCoord, VoxelChunk* chunk, int x, int y, int z, int face) {
+    glm::ivec3 offset = getFaceOffset(face);
+    int nx = x + offset.x;
+    int ny = y + offset.y;
+    int nz = z + offset.z;
+
+    // Vérifier si le voxel voisin est dans le même chunk
+    if (nx >= 0 && ny >= 0 && nz >= 0 &&
+        nx < VoxelArray::SIZE && ny < VoxelArray::SIZE && nz < VoxelArray::SIZE) {
+        // Le voisin est dans le même chunk
+        return chunk->get(nx, ny, nz).ID == voxel::AIR;
+    }
+
+    // Le voisin est dans un autre chunk, utiliser les coordonnées globales
+    int worldX = chunkCoord.x * VoxelArray::SIZE + nx;
+    int worldY = chunkCoord.y * VoxelArray::SIZE + ny;
+    int worldZ = chunkCoord.z * VoxelArray::SIZE + nz;
+
+    Voxel neighborVoxel = m_world->getVoxel(worldX, worldY, worldZ);
+    return neighborVoxel.ID == voxel::AIR;
+}
+
+void ChunkScene::renderAllChunks(const glm::mat4& view, const glm::mat4& projection) {
+    auto* renderer = Application::getInstance().getRenderer();
+
+    for (const auto& pair : m_chunkMeshes) {
+        const ChunkCoord& coord = pair.first;
+        const std::unique_ptr<Mesh>& mesh = pair.second;
+
+        // Matrice de modèle pour positionner le chunk dans le monde
+        auto model = glm::mat4(1.0f);
+        // Note: La position est déjà intégrée dans les vertices du mesh
+
+        m_chunkShader->setMat4("u_Model", model);
+        renderer->drawMesh(*mesh, *m_chunkShader, model);
+    }
 }
 
 glm::ivec3 ChunkScene::getFaceOffset(int face) {

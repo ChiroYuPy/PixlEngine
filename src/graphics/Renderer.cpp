@@ -3,11 +3,8 @@
 //
 
 #include "graphics/Renderer.h"
-
-#include "graphics/Renderer.h"
 #include "graphics/Shader.h"
 #include "graphics/Mesh.h"
-#include "graphics/Shader.h"
 #include <iostream>
 
 Renderer::~Renderer() {
