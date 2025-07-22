@@ -13,10 +13,10 @@ public:
 
     voxel::ID generateVoxel(const glm::ivec3& worldPos) override;
 
-    void generateChunk(VoxelChunk& voxelChunk) override;
+    void generateChunk(Chunk& voxelChunk) override;
 
 private:
-    const int HEIGHT = 4;
+    static constexpr int HEIGHT = 4;
 };
 
 #endif //PIXLENGINE_FLATTERRAINGENERATOR_H

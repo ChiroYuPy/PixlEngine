@@ -5,6 +5,8 @@
 #ifndef PIXLENGINE_DIRECTIONUTILS_H
 #define PIXLENGINE_DIRECTIONUTILS_H
 
+#include <GLT.h>
+
 enum class CubicDirection {
     NORTH = 0,  // +Z
     SOUTH = 1,  // -Z
@@ -14,19 +16,17 @@ enum class CubicDirection {
     DOWN = 5    // -Y
 };
 
-struct DirectionVector {
-    int x, y, z;
-};
-
 namespace DirectionUtils {
     CubicDirection getOpposite(CubicDirection direction);
 
-    DirectionVector getOffset(CubicDirection direction);
+    glm::ivec3 getOffset(CubicDirection direction);
 
     bool isValid(CubicDirection direction);
 
     CubicDirection fromOffset(int x, int y, int z);
-    CubicDirection fromOffset(const DirectionVector& offset);
+    CubicDirection fromOffset(const glm::ivec3& offset);
+
+    CubicDirection fromIndex(int index);
 }
 
 #endif //PIXLENGINE_DIRECTIONUTILS_H

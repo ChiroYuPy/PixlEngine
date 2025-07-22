@@ -34,15 +34,14 @@ set(SOURCES
         src/graphics/Renderer.cpp
         src/input/InputManager.cpp
         src/graphics/Camera.cpp
-        src/graphics/Mesh.cpp
         src/utils/MeshGenerator.cpp
         src/voxelEngine/ChunkScene.cpp
-        src/voxelEngine/voxelWorld/world/VoxelWorld.cpp
-        include/voxelEngine/voxelWorld/world/VoxelWorld.h
-        src/voxelEngine/voxelWorld/chunk/VoxelChunk.cpp
-        include/voxelEngine/voxelWorld/chunk/VoxelChunk.h
-        src/voxelEngine/voxelWorld/storage/VoxelArray.cpp
-        include/voxelEngine/voxelWorld/storage/VoxelArray.h
+        src/voxelEngine/voxelWorld/world/World.cpp
+        include/voxelEngine/voxelWorld/world/World.h
+        src/voxelEngine/voxelWorld/chunk/Chunk.cpp
+        include/voxelEngine/voxelWorld/chunk/Chunk.h
+        src/voxelEngine/voxelWorld/voxel/VoxelArray.cpp
+        include/voxelEngine/voxelWorld/voxel/VoxelArray.h
         src/voxelEngine/voxelWorld/voxel/VoxelType.cpp
         include/voxelEngine/voxelWorld/voxel/VoxelType.h
         src/voxelEngine/CameraController.cpp
@@ -56,6 +55,14 @@ set(SOURCES
         include/core/Color.h
         src/utils/ColorUtils.cpp
         include/utils/ColorUtils.h
+        src/voxelEngine/voxelWorld/generation/NaturalTerrainGenerator.cpp
+        include/voxelEngine/voxelWorld/generation/NaturalTerrainGenerator.h
+        src/voxelEngine/voxelWorld/chunk/ChunkMesh.cpp
+        include/voxelEngine/voxelWorld/chunk/ChunkMesh.h
+        src/voxelEngine/voxelWorld/world/ChunkRenderer.cpp
+        include/voxelEngine/voxelWorld/world/ChunkRenderer.h
+        src/voxelEngine/voxelWorld/world/WorldGenerator.cpp
+        include/voxelEngine/voxelWorld/world/WorldGenerator.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)

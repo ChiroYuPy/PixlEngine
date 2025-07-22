@@ -18,7 +18,7 @@ namespace DirectionUtils {
         }
     }
 
-    DirectionVector getOffset(CubicDirection direction) {
+    glm::ivec3 getOffset(CubicDirection direction) {
         switch (direction) {
             case CubicDirection::NORTH: return {0, 0, 1};
             case CubicDirection::SOUTH: return {0, 0, -1};
@@ -44,7 +44,13 @@ namespace DirectionUtils {
         throw std::invalid_argument("Invalid offset for CubicDirection");
     }
 
-    CubicDirection fromOffset(const DirectionVector& offset) {
+    CubicDirection fromOffset(const glm::ivec3& offset) {
         return fromOffset(offset.x, offset.y, offset.z);
+    }
+
+    CubicDirection fromIndex(int index) {
+        if (index >= 0 && index < 6)
+            return static_cast<CubicDirection>(index);
+        return CubicDirection::NORTH;
     }
 }

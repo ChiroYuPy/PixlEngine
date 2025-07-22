@@ -2,13 +2,15 @@
 // Created by ChiroYuki on 20/07/2025.
 //
 
-#ifndef PIXLENGINE_VOXELCHUNK_H
-#define PIXLENGINE_VOXELCHUNK_H
+#ifndef PIXLENGINE_CHUNK_H
+#define PIXLENGINE_CHUNK_H
 
 #include <memory>
 #include <GLT.h>
-#include "voxelEngine/voxelWorld/storage/VoxelArray.h"
+#include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
 #include "voxelEngine/voxelWorld/utils/DirectionUtils.h"
+#include "graphics/Mesh.h"
+#include "ChunkMesh.h"
 
 struct ChunkCoord {
     int x, y, z;
@@ -36,33 +38,32 @@ namespace std {
     };
 }
 
-class VoxelChunk {
+class Chunk {
 public:
-    explicit VoxelChunk(ChunkCoord coord);
+    explicit Chunk(ChunkCoord coord);
 
     voxel::ID get(int x, int y, int z) const;
-    void set(int x, int y, int z, voxel::ID voxel);
-
     voxel::ID get(const glm::ivec3& pos) const;
+
+    void set(int x, int y, int z, voxel::ID voxel);
     void set(const glm::ivec3& pos, voxel::ID voxel);
 
-    void clear();
     void fill(voxel::ID ID);
-
-    void setNeighbor(CubicDirection direction, VoxelChunk* neighbor);
-    VoxelChunk* getNeighbor(CubicDirection direction) const;
 
     void markDirty();
 
     glm::ivec3 getPosition() const;
 
+    void buildMesh(const World& world);
+    const ChunkMesh* getMesh() const;
+
 private:
-    VoxelArray m_storage;
-    std::array<VoxelChunk*, 6> m_neighbors;
     ChunkCoord m_position;
+    VoxelArray m_storage;
+    std::unique_ptr<ChunkMesh> m_mesh;
     bool m_dirty = true;
 
     static bool isInBounds(int x, int y, int z);
 };
 
-#endif //PIXLENGINE_VOXELCHUNK_H
+#endif //PIXLENGINE_CHUNK_H

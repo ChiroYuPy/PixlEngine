@@ -2,18 +2,24 @@
 // Created by ChiroYuki on 22/07/2025.
 //
 
-#include <iostream>
 #include <format>
-#include "voxelEngine/voxelWorld/generation/FlatTerrainGenerator.h"
+#include "voxelEngine/voxelWorld/generation/NaturalTerrainGenerator.h"
 #include "utils/Logger.h"
 
-voxel::ID FlatTerrainGenerator::generateVoxel(const glm::ivec3 &worldPos) {
-    if (worldPos.y < HEIGHT - 1) return voxel::DIRT;
-    else if (worldPos.y == HEIGHT - 1) return voxel::GRASS;
-    else return voxel::AIR;
+voxel::ID NaturalTerrainGenerator::generateVoxel(const glm::ivec3 &worldPos) {
+    double nx = static_cast<double>(worldPos.x) * 0.01;
+    double nz = static_cast<double>(worldPos.z) * 0.01;
+
+    double elevation = noise.noise2(nx, nz);
+    int groundHeight = static_cast<int>(HEIGHT + elevation * 16.0);
+
+    if (worldPos.y < groundHeight - 3) return voxel::STONE;
+    if (worldPos.y < groundHeight - 1) return voxel::DIRT;
+    if (worldPos.y == groundHeight - 1) return voxel::GRASS;
+    return voxel::AIR;
 }
 
-void FlatTerrainGenerator::generateChunk(Chunk &voxelChunk) {
+void NaturalTerrainGenerator::generateChunk(Chunk &voxelChunk) {
     const glm::ivec3 chunkPos = voxelChunk.getPosition();
     Logger::info(std::format("chunkPos: {}, {}, {}", chunkPos.x, chunkPos.y, chunkPos.z));
 

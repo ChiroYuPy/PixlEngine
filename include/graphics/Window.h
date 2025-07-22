@@ -13,7 +13,7 @@
 struct WindowConfig {
     int width = 1280;
     int height = 720;
-    std::string title = "voxel Engine";
+    std::string title = "PixlEngine";
     bool fullscreen = false;
     bool vsync = true;
 };

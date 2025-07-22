@@ -50,33 +50,6 @@ void Renderer::setViewport(int x, int y, int width, int height) {
     glViewport(x, y, width, height);
 }
 
-void Renderer::drawMesh(const Mesh& mesh, Shader& shader, const glm::mat4& transform) {
-    shader.use();
-    shader.setMat4("u_Model", transform);
-    mesh.draw();
-
-    m_stats.drawCalls++;
-    m_stats.vertices += mesh.getVertexCount();
-    m_stats.triangles += mesh.getIndexCount() > 0 ? mesh.getIndexCount() / 3 : mesh.getVertexCount() / 3;
-}
-
-void Renderer::drawWireframe(const Mesh& mesh, Shader& shader, const glm::mat4& transform) {
-    bool wasWireframe = false;
-    GLint polygonMode[2];
-    glGetIntegerv(GL_POLYGON_MODE, polygonMode);
-    wasWireframe = (polygonMode[0] == GL_LINE);
-
-    if (!wasWireframe) {
-        setWireframeMode(true);
-    }
-
-    drawMesh(mesh, shader, transform);
-
-    if (!wasWireframe) {
-        setWireframeMode(false);
-    }
-}
-
 void Renderer::enableDepthTest(bool enable) {
     if (enable) {
         glEnable(GL_DEPTH_TEST);

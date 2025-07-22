@@ -6,14 +6,14 @@
 #define PIXLENGINE_ITERRAINGENERATOR_H
 
 #include <GLT.h>
-#include "voxelEngine/voxelWorld/chunk/VoxelChunk.h"
+#include "voxelEngine/voxelWorld/chunk/Chunk.h"
 
 class ITerrainGenerator {
 public:
     explicit ITerrainGenerator(uint32_t seed) : m_seed(seed) {}
     virtual ~ITerrainGenerator() = default;
 
-    virtual void generateChunk(VoxelChunk& voxelChunk) = 0;
+    virtual void generateChunk(Chunk& voxelChunk) = 0;
 
 protected:
     uint32_t m_seed;

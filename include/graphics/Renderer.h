@@ -5,7 +5,9 @@
 #ifndef PIXLENGINE_RENDERER_H
 #define PIXLENGINE_RENDERER_H
 
-#include <GLT.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 #include "Mesh.h"
 #include "Shader.h"
 
@@ -20,6 +22,12 @@ public:
     Renderer() = default;
     ~Renderer();
 
+    // Non-copyable but movable
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+    Renderer(Renderer&&) = default;
+    Renderer& operator=(Renderer&&) = default;
+
     bool initialize();
     void shutdown();
 
@@ -30,8 +38,11 @@ public:
     void setViewport(int x, int y, int width, int height);
 
     // Rendu basique
-    void drawMesh(const Mesh& mesh, Shader& shader, const glm::mat4& transform);
-    void drawWireframe(const Mesh& mesh, Shader& shader, const glm::mat4& transform);
+    template<typename VertexType>
+    void drawMesh(const Mesh<VertexType>& mesh, Shader& shader, const glm::mat4& transform);
+
+    template<typename VertexType>
+    void drawWireframe(const Mesh<VertexType>& mesh, Shader& shader, const glm::mat4& transform);
 
     // Configuration
     void enableDepthTest(bool enable = true);
@@ -42,9 +53,13 @@ public:
     const RenderStats& getStats() const { return m_stats; }
     void resetStats() { m_stats = {}; }
 
+    bool isInitialized() const { return m_initialized; }
+
 private:
     RenderStats m_stats;
     bool m_initialized = false;
 };
+
+#include "Renderer.inl"
 
 #endif //PIXLENGINE_RENDERER_H

@@ -3,7 +3,7 @@
 //
 
 #include <stdexcept>
-#include "voxelEngine/voxelWorld/storage/VoxelArray.h"
+#include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
 
 VoxelArray::VoxelArray() : voxels{} {
     fill(voxel::AIR);

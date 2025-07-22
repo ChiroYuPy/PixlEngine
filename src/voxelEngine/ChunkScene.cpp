@@ -5,7 +5,7 @@
 #include <random>
 #include <iostream>
 #include "voxelEngine/ChunkScene.h"
-#include "voxelEngine/voxelWorld/chunk/VoxelChunk.h"
+#include "voxelEngine/voxelWorld/chunk/Chunk.h"
 #include "utils/Logger.h"
 
 bool ChunkScene::initialize() {
@@ -19,28 +19,21 @@ bool ChunkScene::initialize() {
 
     m_chunkShader = std::make_unique<Shader>();
 
-    if (!m_chunkShader->loadFromFiles("resources/shaders/chunk.vert", "resources/shaders/chunk.frag")) return false;
+    if (!m_chunkShader->loadFromFiles("resources/shaders/chunk.vert", "resources/shaders/chunk.frag")) {
+        std::cerr << "Failed to load chunk shaders" << std::endl;
+        return false;
+    }
 
-    // Initialisation du ChunkStorage
-    m_world = std::make_unique<VoxelWorld>();
+    m_world = std::make_unique<World>();
 
-    // Création de quelques chunks pour le test
-    VoxelChunk* c1 = m_world->getOrCreateChunk(0, 0, 0);
-    VoxelChunk* c2 = m_world->getOrCreateChunk(1, 0, 0);
-    VoxelChunk* c3 = m_world->getOrCreateChunk(0, 0, 1);
-
-    /*
-    c1->fill(voxel::GRASS);
-
-    c1->set(0, 0, 0, voxel::STONE);
-
-    std::cout << "ID: " << voxel::getVoxelDisplayName(c1->get(0, 0, 0)) << std::endl;
-    */
-
-    m_world->generateArea({-1, -1, -1}, {1, 1, 1});
-
-    // Construire le mesh pour tous les chunks chargés
-    buildAllChunksMesh();
+    try {
+        constexpr unsigned int SIZE = 12;
+        m_world->generateArea({-(SIZE-1), -1, -(SIZE-1)}, {SIZE, 1, SIZE});
+        buildAllChunksMesh();
+    } catch (const std::exception& e) {
+        std::cerr << "Error during world generation: " << e.what() << std::endl;
+        return false;
+    }
 
     input->setKeyCallback([this](int key, KeyState state) {
         if (key == GLFW_KEY_ESCAPE && state == KeyState::Pressed) {
@@ -62,125 +55,50 @@ bool ChunkScene::initialize() {
 }
 
 void ChunkScene::update(float deltaTime) {
-    m_cameraController->update(deltaTime);
+    if (m_cameraController)
+        m_cameraController->update(deltaTime);
 }
 
 void ChunkScene::render() {
     auto* renderer = Application::getInstance().getRenderer();
     auto* window = Application::getInstance().getWindow();
 
+    if (!renderer || !window || !m_camera || !m_chunkShader) {
+        Logger::warn("render aborted, missing some components");
+        return;
+    }
+
+    float aspectRatio = window->getAspectRatio();
+
     glm::mat4 view = m_camera->getViewMatrix();
-    glm::mat4 proj = m_camera->getProjectionMatrix(window->getAspectRatio());
+    glm::mat4 proj = m_camera->getProjectionMatrix(aspectRatio);
 
     m_chunkShader->use();
     m_chunkShader->setMat4("u_View", view);
     m_chunkShader->setMat4("u_Projection", proj);
 
-    // Rendu de tous les chunks
-    renderAllChunks(view, proj);
+    renderAllChunks();
 }
 
 void ChunkScene::shutdown() {
-    m_chunkMeshes.clear();
     m_chunkShader.reset();
     m_camera.reset();
     m_world.reset();
+    m_cameraController.reset();
 }
 
 void ChunkScene::buildAllChunksMesh() {
-    m_chunkMeshes.clear();
-
-    // Construire le mesh pour chaque chunk chargé
-    m_world->forEachChunk([this](const ChunkCoord& coord, VoxelChunk* chunk) {
-        buildChunkMesh(coord, chunk);
+    if (!m_world) return;
+    m_world->forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
+        if (chunk) chunk->buildMesh(*m_world);
     });
 }
 
-void ChunkScene::buildChunkMesh(const ChunkCoord& chunkCoord, VoxelChunk* chunk) {
-    if (!chunk) return;
-
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-
-    // Offset de position du chunk dans le monde
-    glm::vec3 chunkOffset(
-            chunkCoord.x * VoxelArray::SIZE,
-            chunkCoord.y * VoxelArray::SIZE,
-            chunkCoord.z * VoxelArray::SIZE
-    );
-
-    for (int x = 0; x < VoxelArray::SIZE; ++x) {
-        for (int y = 0; y < VoxelArray::SIZE; ++y) {
-            for (int z = 0; z < VoxelArray::SIZE; ++z) {
-                voxel::ID voxel = chunk->get(x, y, z);
-                if (voxel == 0) continue;
-
-                glm::vec3 pos = chunkOffset + glm::vec3(x, y, z);
-                Color color = voxel::getVoxelColor(voxel);
-
-                for (int face = 0; face < 6; ++face) {
-                    if (isFaceExposed(chunkCoord, chunk, x, y, z, face))
-                        MeshGenerator::addCubeFace(vertices, indices, pos, face, color);
-                }
-            }
+void ChunkScene::renderAllChunks() {
+    m_world->forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
+        if (chunk) {
+            const ChunkMesh* mesh = chunk->getMesh();
+            if (mesh) mesh->render(*m_chunkShader);
         }
-    }
-
-    if (!vertices.empty()) {
-        auto mesh = std::make_unique<Mesh>();
-        mesh->setVertices(vertices);
-        mesh->setIndices(indices);
-        mesh->upload();
-        m_chunkMeshes[chunkCoord] = std::move(mesh);
-    }
-}
-
-bool ChunkScene::isFaceExposed(const ChunkCoord& chunkCoord, VoxelChunk* chunk, int x, int y, int z, int face) {
-    glm::ivec3 offset = getFaceOffset(face);
-    int nx = x + offset.x;
-    int ny = y + offset.y;
-    int nz = z + offset.z;
-
-    // Vérifier si le voxel voisin est dans le même chunk
-    if (nx >= 0 && ny >= 0 && nz >= 0 &&
-        nx < VoxelArray::SIZE && ny < VoxelArray::SIZE && nz < VoxelArray::SIZE) {
-        // Le voisin est dans le même chunk
-        return chunk->get(nx, ny, nz) == voxel::AIR;
-    }
-
-    // Le voisin est dans un autre chunk, utiliser les coordonnées globales
-    int worldX = chunkCoord.x * VoxelArray::SIZE + nx;
-    int worldY = chunkCoord.y * VoxelArray::SIZE + ny;
-    int worldZ = chunkCoord.z * VoxelArray::SIZE + nz;
-
-    voxel::ID neighborVoxel = m_world->getVoxel(worldX, worldY, worldZ);
-    return neighborVoxel == voxel::AIR;
-}
-
-void ChunkScene::renderAllChunks(const glm::mat4& view, const glm::mat4& projection) {
-    auto* renderer = Application::getInstance().getRenderer();
-
-    for (const auto& pair : m_chunkMeshes) {
-        const ChunkCoord& coord = pair.first;
-        const std::unique_ptr<Mesh>& mesh = pair.second;
-
-        // Matrice de modèle pour positionner le chunk dans le monde
-        auto model = glm::mat4(1.0f);
-        // Note: La position est déjà intégrée dans les vertices du mesh
-
-        m_chunkShader->setMat4("u_Model", model);
-        renderer->drawMesh(*mesh, *m_chunkShader, model);
-    }
-}
-
-glm::ivec3 ChunkScene::getFaceOffset(int face) {
-    switch (face) {
-        case 0: return {0, 0, 1};  // front
-        case 1: return {0, 0, -1}; // back
-        case 2: return {-1, 0, 0}; // left
-        case 3: return {1, 0, 0};  // right
-        case 4: return {0, 1, 0};  // top
-        case 5: return {0, -1, 0}; // bottom
-        default: return {0, 0, 0};
-    }
+    });
 }
