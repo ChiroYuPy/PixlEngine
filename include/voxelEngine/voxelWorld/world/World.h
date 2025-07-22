@@ -36,7 +36,7 @@ public:
     static glm::ivec3 toLocalCoord(int x, int y, int z);
     static glm::ivec3 toLocalCoord(const glm::ivec3& position);
 
-    static glm::ivec3 toWorldPos(const glm::ivec3& chunkCoord, const glm::ivec3& localPos);
+    static glm::ivec3 toWorldPos(const glm::ivec3& chunkCoord, const glm::ivec3& localPos = {0, 0, 0});
 
     void clear();
 

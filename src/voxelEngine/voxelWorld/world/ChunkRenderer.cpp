@@ -5,9 +5,8 @@
 #include "voxelEngine/voxelWorld/world/ChunkRenderer.h"
 #include "voxelEngine/voxelWorld/world/World.h"
 
-ChunkRenderer::ChunkRenderer(World& world, Shader& shader) : m_world(world), m_shader(shader) {
-
-}
+ChunkRenderer::ChunkRenderer(World& world, Shader& shader)
+: m_world(world), m_shader(shader) {}
 
 void ChunkRenderer::buildAll() {
     m_world.forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {

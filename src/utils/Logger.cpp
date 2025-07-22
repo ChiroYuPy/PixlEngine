@@ -109,7 +109,7 @@ void Logger::warn(const std::string& message) {
     log(LogLevel::Warn, message);
 }
 
-void Logger::error(const std::string& message) {
+void Logger::error(const std::string &message) {
     log(LogLevel::Error, message);
 }
 

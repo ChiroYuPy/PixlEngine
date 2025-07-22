@@ -5,14 +5,15 @@
 #ifndef PIXLENGINE_CHUNKSCENE_H
 #define PIXLENGINE_CHUNKSCENE_H
 
-#include "scene/SceneManager.h"
 #include "graphics/Camera.h"
 #include "graphics/Shader.h"
 #include "core/Application.h"
-#include "utils/MeshGenerator.h"
-#include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
 #include "CameraController.h"
+#include "scene/SceneManager.h"
+#include "utils/MeshGenerator.h"
 #include "voxelEngine/voxelWorld/world/World.h"
+#include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
+#include "voxelEngine/voxelWorld/world/BlockPlacer.h"
 #include "voxelEngine/voxelWorld/world/ChunkRenderer.h"
 
 class ChunkScene : public Scene {
@@ -23,16 +24,25 @@ public:
     void shutdown() override;
 
 private:
+    void setupCamera();
+    void setupShader();
+    void setupWorld();
+    void setupBlockPlacer();
+    void setupInput();
+
+    void renderBlockOutline(const glm::ivec3& blockPos,
+                            const glm::mat4& view,
+                            const glm::mat4& proj);
+
     std::shared_ptr<Camera> m_camera;
     std::unique_ptr<CameraController> m_cameraController;
     std::unique_ptr<Shader> m_shader;
     std::unique_ptr<World> m_world;
     std::unique_ptr<ChunkRenderer> m_chunkRenderer;
+    std::unique_ptr<BlockPlacer> m_blockPlacer;
 
-    void setupCamera();
-    void setupShader();
-    void setupWorld();
-    void setupInput();
+    glm::ivec3 m_targetedBlockPos;
+    bool m_hasTargetedBlock = false;
 };
 
 #endif //PIXLENGINE_CHUNKSCENE_H

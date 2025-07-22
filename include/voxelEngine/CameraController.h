@@ -23,8 +23,8 @@ private:
     std::shared_ptr<Camera> m_camera;
 
     bool m_active = false;
-    float m_movementSpeed = 128.0f;
-    float m_rotationSensitivity = 0.25f;
+    float m_movementSpeed = 16.0f;
+    float m_rotationSensitivity = 0.33f;
 };
 
 #endif //PIXLENGINE_CAMERACONTROLLER_H

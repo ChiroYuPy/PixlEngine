@@ -46,6 +46,7 @@ glm::ivec3 Chunk::getPosition() const {
 }
 
 void Chunk::buildMesh(const World& world) {
+    if (!m_dirty) return;
     if (!m_mesh) m_mesh = std::make_unique<ChunkMesh>(glm::ivec3{m_position.x, m_position.y, m_position.z});
     m_mesh->build(*this, world);
     m_dirty = false;
