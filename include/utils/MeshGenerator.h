@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "graphics/Mesh.h"
+#include "core/Color.h"
 
 class MeshGenerator {
 public:
@@ -18,7 +19,7 @@ public:
 
     // Pour les voxels optimisés (avec culling des faces)
     static void addCubeFace(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices,
-                            const glm::vec3& position, int faceIndex, const glm::vec3& color);
+                            const glm::vec3& position, int faceIndex, const Color color);
 };
 
 #endif //PIXLENGINE_MESHGENERATOR_H

@@ -116,17 +116,11 @@ void ChunkScene::buildChunkMesh(const ChunkCoord& chunkCoord, VoxelChunk* chunk)
                 if (voxel == 0) continue;
 
                 glm::vec3 pos = chunkOffset + glm::vec3(x, y, z);
-                uint32_t hexColor = voxel::getVoxelColorRGBA(voxel);
-
-                float r = ((hexColor >> 16) & 0xFF) / 255.0f;
-                float g = ((hexColor >> 8)  & 0xFF) / 255.0f;
-                float b = ((hexColor >> 0)  & 0xFF) / 255.0f;
-                glm::vec3 color = glm::vec3(r, g, b);
+                Color color = voxel::getVoxelColor(voxel);
 
                 for (int face = 0; face < 6; ++face) {
-                    if (isFaceExposed(chunkCoord, chunk, x, y, z, face)) {
+                    if (isFaceExposed(chunkCoord, chunk, x, y, z, face))
                         MeshGenerator::addCubeFace(vertices, indices, pos, face, color);
-                    }
                 }
             }
         }

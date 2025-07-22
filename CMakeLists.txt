@@ -52,6 +52,10 @@ set(SOURCES
         include/voxelEngine/voxelWorld/generation/ITerrainGenerator.h
         src/voxelEngine/voxelWorld/generation/FlatTerrainGenerator.cpp
         include/voxelEngine/voxelWorld/generation/FlatTerrainGenerator.h
+        src/core/Color.cpp
+        include/core/Color.h
+        src/utils/ColorUtils.cpp
+        include/utils/ColorUtils.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)

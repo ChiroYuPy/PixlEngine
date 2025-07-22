@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 #include <array>
+#include "core/Color.h"
 
 namespace voxel {
 
@@ -22,26 +23,19 @@ namespace voxel {
 
     struct VoxelTypeDefinition {
         std::string displayName;
-        uint32_t colorRGBA;           // Packed RGBA color 0xRRGGBBAA
-        RenderingMode renderingMode;  // How this voxel should be rendered
-        float lightEmissionLevel;     // Light emission (0.0 = no light, 1.0 = full bright)
-        bool hasCollision;            // Can entities collide with this block?
+        Color color;
+        RenderingMode renderingMode;
+        float lightEmissionLevel;
+        bool hasCollision;
 
-        // Constructor with sensible defaults
-        constexpr VoxelTypeDefinition(
+        VoxelTypeDefinition(
                 std::string_view displayName = "Unknown Block",
-                uint32_t colorRGBA = 0xFF00FFFF,  // Bright magenta for debugging
+                const Color& color = Color(255, 0, 255, 255),
                 RenderingMode renderingMode = RenderingMode::SOLID,
                 float lightEmissionLevel = 0.0f,
-                bool hasCollision = true)
-        : displayName(displayName),
-          colorRGBA(colorRGBA),
-          renderingMode(renderingMode),
-          lightEmissionLevel(lightEmissionLevel),
-          hasCollision(hasCollision) {}
+                bool hasCollision = true);
     };
 
-    // voxel type identifiers
     enum VoxelTypes : ID {
         AIR             = 0,
         DIRT            = 1,
@@ -57,163 +51,54 @@ namespace voxel {
         MAX_TYPE_ID     = 255
     };
 
-    // Global voxel type registry
-    inline const std::array<VoxelTypeDefinition, 256> VOXEL_TYPE_REGISTRY = [] {
-        std::array<VoxelTypeDefinition, 256> registry{};
+    // Classe singleton pour gérer le registre des voxels
+    class VoxelTypeRegistry {
+    private:
+        std::array<VoxelTypeDefinition, 256> registry;
+        static VoxelTypeRegistry* instance;
 
-        // Air - special invisible block
-        registry[AIR] = VoxelTypeDefinition{
-                "Air",
-                0x00000000, // fully transparent
-                RenderingMode::INVISIBLE,
-                0.0f,
-                false
-        };
+        VoxelTypeRegistry();
 
-        // Terrain blocks
-        registry[DIRT] = VoxelTypeDefinition{
-                "Dirt Block",
-                0x80522FFF, // RGB ~ (128, 82, 47), opaque (alpha=255)
-                RenderingMode::SOLID,
-                0.0f,
-                true
-        };
+    public:
+        static VoxelTypeRegistry& getInstance();
 
-        registry[GRASS] = VoxelTypeDefinition{
-                "Grass Block",
-                0x7CAC17FF, // RGB ~ (124, 172, 23) vert herbe typique
-                RenderingMode::SOLID,
-                0.0f,
-                true
-        };
+        // Accesseurs en lecture seule
+        [[nodiscard]] const VoxelTypeDefinition& getDefinition(ID voxelID) const noexcept;
 
-        registry[STONE] = VoxelTypeDefinition{
-                "Stone Block",
-                0x7F7F7FFF, // RGB ~ (127, 127, 127) gris moyen
-                RenderingMode::SOLID,
-                0.0f,
-                true
-        };
+        // Méthodes pour modifier les définitions
+        void setDefinition(ID voxelID, const VoxelTypeDefinition& definition) noexcept;
+        void setColor(ID voxelID, const Color& color) noexcept;
+        void setRenderingMode(ID voxelID, RenderingMode mode) noexcept;
+        void setLightEmissionLevel(ID voxelID, float level) noexcept;
+        void setCollision(ID voxelID, bool hasCollision) noexcept;
+        void setDisplayName(ID voxelID, std::string_view name) noexcept;
 
-        registry[SAND] = VoxelTypeDefinition{
-                "Sand Block",
-                0xFAF0CFFF, // RGB ~ (250, 240, 207) sable clair
-                RenderingMode::SOLID,
-                0.0f,
-                true
-        };
+        // Méthode pour réinitialiser aux valeurs par défaut
+        void resetToDefaults() noexcept;
+    };
 
-        // Liquid blocks
-        registry[WATER] = VoxelTypeDefinition{
-                "Water",
-                0x3F76E480, // RGB ~ (63, 118, 228), alpha 128 (~50% transparent)
-                RenderingMode::TRANSLUCENT,
-                0.0f,
-                false
-        };
+    // Fonctions utilitaires (inchangées mais utilisent maintenant le singleton)
+    [[nodiscard]] bool isValidVoxelID(ID voxelID) noexcept;
+    [[nodiscard]] const VoxelTypeDefinition& getVoxelTypeDefinition(ID voxelID) noexcept;
+    [[nodiscard]] const std::string& getVoxelDisplayName(ID voxelID) noexcept;
+    [[nodiscard]] Color getVoxelColor(ID voxelID) noexcept;
+    [[nodiscard]] RenderingMode getVoxelRenderingMode(ID voxelID) noexcept;
+    [[nodiscard]] float getVoxelLightEmissionLevel(ID voxelID) noexcept;
+    [[nodiscard]] bool doesVoxelHaveCollision(ID voxelID) noexcept;
+    [[nodiscard]] bool isVoxelTransparent(ID voxelID) noexcept;
+    [[nodiscard]] bool isVoxelOpaque(ID voxelID) noexcept;
+    [[nodiscard]] bool isVoxelLightEmitting(ID voxelID) noexcept;
+    [[nodiscard]] bool isVoxelAir(ID voxelID) noexcept;
+    [[nodiscard]] bool isVoxelLiquid(ID voxelID) noexcept;
+    [[nodiscard]] bool isVoxelSolid(ID voxelID) noexcept;
+    [[nodiscard]] bool shouldRenderVoxelFace(ID currentVoxel, ID neighborVoxel) noexcept;
 
-        registry[LAVA] = VoxelTypeDefinition{
-                "Lava",
-                0xCF4A0FFF, // RGB ~ (207, 74, 15) vif, opaque
-                RenderingMode::EMISSIVE,
-                0.9f,
-                false
-        };
-
-        // Building materials
-        registry[GLASS] = VoxelTypeDefinition{
-                "Glass Block",
-                0xFFFFFF40, // blanc très transparent (alpha ~ 64 / 255)
-                RenderingMode::TRANSLUCENT,
-                0.0f,
-                true
-        };
-
-        registry[WOOD] = VoxelTypeDefinition{
-                "Wood Log",
-                0x6B4F2FFF, // RGB ~ (107, 79, 47) marron bois
-                RenderingMode::SOLID,
-                0.0f,
-                true
-        };
-
-        registry[LEAVES] = VoxelTypeDefinition{
-                "Leaves",
-                0x4C9B23A0, // RGB ~ (76, 155, 35) vert feuille, alpha ~160 (semi transparent)
-                RenderingMode::TRANSLUCENT,
-                0.0f,
-                true
-        };
-
-        return registry;
-    }();
-
-    // Validation functions
-    [[nodiscard]] inline constexpr bool isValidVoxelID(ID voxelID) noexcept {
-        return voxelID <= MAX_TYPE_ID;
-    }
-
-    // Direct accessor functions
-    [[nodiscard]] inline const VoxelTypeDefinition& getVoxelTypeDefinition(ID voxelID) noexcept {
-        return VOXEL_TYPE_REGISTRY[voxelID];
-    }
-
-    [[nodiscard]] inline const std::string& getVoxelDisplayName(ID voxelID) noexcept {
-        return VOXEL_TYPE_REGISTRY[voxelID].displayName;
-    }
-
-    [[nodiscard]] inline constexpr uint32_t getVoxelColorRGBA(ID voxelID) noexcept {
-        return VOXEL_TYPE_REGISTRY[voxelID].colorRGBA;
-    }
-
-    [[nodiscard]] inline constexpr RenderingMode getVoxelRenderingMode(ID voxelID) noexcept {
-        return VOXEL_TYPE_REGISTRY[voxelID].renderingMode;
-    }
-
-    [[nodiscard]] inline constexpr float getVoxelLightEmissionLevel(ID voxelID) noexcept {
-        return VOXEL_TYPE_REGISTRY[voxelID].lightEmissionLevel;
-    }
-
-    [[nodiscard]] inline constexpr bool doesVoxelHaveCollision(ID voxelID) noexcept {
-        return VOXEL_TYPE_REGISTRY[voxelID].hasCollision;
-    }
-
-    // Semantic property query functions
-    [[nodiscard]] inline constexpr bool isVoxelTransparent(ID voxelID) noexcept {
-        const auto renderMode = getVoxelRenderingMode(voxelID);
-        return renderMode == RenderingMode::TRANSLUCENT || renderMode == RenderingMode::INVISIBLE;
-    }
-
-    [[nodiscard]] inline constexpr bool isVoxelOpaque(ID voxelID) noexcept {
-        const auto renderMode = getVoxelRenderingMode(voxelID);
-        return renderMode == RenderingMode::SOLID || renderMode == RenderingMode::EMISSIVE;
-    }
-
-    [[nodiscard]] inline constexpr bool isVoxelLightEmitting(ID voxelID) noexcept {
-        return getVoxelRenderingMode(voxelID) == RenderingMode::EMISSIVE;
-    }
-
-    [[nodiscard]] inline constexpr bool isVoxelAir(ID voxelID) noexcept {
-        return voxelID == AIR;
-    }
-
-    [[nodiscard]] inline constexpr bool isVoxelLiquid(ID voxelID) noexcept {
-        return voxelID == WATER || voxelID == LAVA;
-    }
-
-    [[nodiscard]] inline constexpr bool isVoxelSolid(ID voxelID) noexcept {
-        return !isVoxelAir(voxelID) && !isVoxelLiquid(voxelID);
-    }
-
-    // Rendering optimization functions
-    [[nodiscard]] inline constexpr bool shouldRenderVoxelFace(ID currentVoxel, ID neighborVoxel) noexcept {
-        if (currentVoxel == AIR) return false;
-        if (neighborVoxel == AIR) return true;
-
-        if (isVoxelOpaque(currentVoxel) && isVoxelOpaque(neighborVoxel))
-            return false;
-        return true;
-    }
+    // Fonctions de convenance pour modifier les types de voxels
+    void modifyVoxelColor(ID voxelID, const Color& newColor) noexcept;
+    void modifyVoxelRenderingMode(ID voxelID, RenderingMode newMode) noexcept;
+    void modifyVoxelLightLevel(ID voxelID, float newLevel) noexcept;
+    void modifyVoxelCollision(ID voxelID, bool hasCollision) noexcept;
+    void modifyVoxelName(ID voxelID, std::string_view newName) noexcept;
 
 } // namespace voxel
 
