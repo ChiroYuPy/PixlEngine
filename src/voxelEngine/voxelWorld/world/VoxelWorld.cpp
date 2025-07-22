@@ -4,11 +4,16 @@
 
 #include "voxelEngine/voxelWorld/world/VoxelWorld.h"
 #include "voxelEngine/voxelWorld/chunk/VoxelChunk.h"
+#include "voxelEngine/voxelWorld/generation/FlatTerrainGenerator.h"
+#include "utils/Logger.h"
 #include <stdexcept>
+#include <format>
 
-VoxelWorld::VoxelWorld() = default;
+VoxelWorld::VoxelWorld() {
+    m_generator = std::make_unique<FlatTerrainGenerator>(0);
+}
 
-Voxel VoxelWorld::getVoxel(int worldX, int worldY, int worldZ) const {
+voxel::ID VoxelWorld::getVoxel(int worldX, int worldY, int worldZ) const {
     ChunkCoord chunkCoord = toChunkCoord(worldX, worldY, worldZ);
     glm::ivec3 localPos = toLocalCoord(worldX, worldY, worldZ);
 
@@ -16,33 +21,26 @@ Voxel VoxelWorld::getVoxel(int worldX, int worldY, int worldZ) const {
     if (it != m_chunks.end())
         return it->second->get(localPos.x, localPos.y, localPos.z);
 
-    return Voxel{}; // Air par défaut
+    return voxel::AIR; // Air par défaut
 }
 
-void VoxelWorld::setVoxel(int worldX, int worldY, int worldZ, Voxel voxel) {
+void VoxelWorld::setVoxel(int worldX, int worldY, int worldZ, voxel::ID ID) {
     ChunkCoord chunkCoord = toChunkCoord(worldX, worldY, worldZ);
     glm::ivec3 localPos = toLocalCoord(worldX, worldY, worldZ);
 
     VoxelChunk* chunk = getOrCreateChunk(chunkCoord.x, chunkCoord.y, chunkCoord.z);
     if (chunk) {
-        chunk->set(localPos.x, localPos.y, localPos.z, voxel);
+        chunk->set(localPos.x, localPos.y, localPos.z, ID);
         chunk->markDirty();
     }
 }
 
-void VoxelWorld::setVoxel(int worldX, int worldY, int worldZ, voxel::VoxelID type) {
-    setVoxel(worldX, worldY, worldZ, Voxel{static_cast<uint8_t>(type)});
-}
-
-Voxel VoxelWorld::getVoxel(const glm::ivec3& worldPos) const {
+voxel::ID VoxelWorld::getVoxel(const glm::ivec3& worldPos) const {
     return getVoxel(worldPos.x, worldPos.y, worldPos.z);
 }
 
-void VoxelWorld::setVoxel(const glm::ivec3& worldPos, Voxel voxel) {
-    setVoxel(worldPos.x, worldPos.y, worldPos.z, voxel);
-}
 
-void VoxelWorld::setVoxel(const glm::ivec3& worldPos, voxel::VoxelID type) {
+void VoxelWorld::setVoxel(const glm::ivec3& worldPos, voxel::ID type) {
     setVoxel(worldPos.x, worldPos.y, worldPos.z, type);
 }
 
@@ -112,4 +110,13 @@ void VoxelWorld::forEachChunk(const std::function<void(const ChunkCoord &, Voxel
     for (auto& [coord, chunk] : m_chunks) {
         func(coord, chunk.get());
     }
+}
+
+void VoxelWorld::generateArea(const glm::ivec3 &startPos, const glm::ivec3 &endPos) {
+    for (int cx = startPos.x; cx <= endPos.x; ++cx)
+        for (int cy = startPos.y; cy <= endPos.y; ++cy)
+            for (int cz = startPos.z; cz <= endPos.z; ++cz) {
+                VoxelChunk* chunk = getOrCreateChunk(cx, cy, cz);
+                m_generator->generateChunk(*chunk);
+            }
 }

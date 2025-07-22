@@ -9,21 +9,20 @@
 #include <memory>
 #include <unordered_map>
 #include <functional>
-#include "voxelEngine/voxelWorld/voxel/Voxel.h"
 #include "voxelEngine/voxelWorld/chunk/VoxelChunk.h"
+#include "voxelEngine/voxelWorld/voxel/VoxelType.h"
+#include "voxelEngine/voxelWorld/generation/ITerrainGenerator.h"
 
 class VoxelWorld {
 public:
     VoxelWorld();
     ~VoxelWorld() = default;
 
-    Voxel getVoxel(int worldX, int worldY, int worldZ) const;
-    void setVoxel(int worldX, int worldY, int worldZ, Voxel voxel);
-    void setVoxel(int worldX, int worldY, int worldZ, voxel::VoxelID type);
+    voxel::ID getVoxel(int worldX, int worldY, int worldZ) const;
+    void setVoxel(int worldX, int worldY, int worldZ, voxel::ID ID);
 
-    Voxel getVoxel(const glm::ivec3& worldPos) const;
-    void setVoxel(const glm::ivec3& worldPos, Voxel voxel);
-    void setVoxel(const glm::ivec3& worldPos, voxel::VoxelID type);
+    voxel::ID getVoxel(const glm::ivec3& worldPos) const;
+    void setVoxel(const glm::ivec3& worldPos, voxel::ID ID);
 
     VoxelChunk* getOrCreateChunk(int x, int y, int z);
     VoxelChunk *getOrCreateChunk(const glm::ivec3 &pos);
@@ -43,9 +42,12 @@ public:
 
     void forEachChunk(const std::function<void(const ChunkCoord&, VoxelChunk*)>& func);
 
+    void generateArea(const glm::ivec3& startPos, const glm::ivec3& endPos);
 
 private:
     std::unordered_map<ChunkCoord, std::unique_ptr<VoxelChunk>> m_chunks;
+
+    std::unique_ptr<ITerrainGenerator> m_generator;
 };
 
 #endif //PIXLENGINE_VOXELWORLD_H

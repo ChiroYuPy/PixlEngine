@@ -29,11 +29,15 @@ bool ChunkScene::initialize() {
     VoxelChunk* c2 = m_world->getOrCreateChunk(1, 0, 0);
     VoxelChunk* c3 = m_world->getOrCreateChunk(0, 0, 1);
 
+    /*
     c1->fill(voxel::GRASS);
 
-    c1->set(0, 0, 0, Voxel{voxel::STONE});
+    c1->set(0, 0, 0, voxel::STONE);
 
-    std::cout << "ID: " << voxel::getVoxelDisplayName(c1->get(0, 0, 0).ID) << std::endl;
+    std::cout << "ID: " << voxel::getVoxelDisplayName(c1->get(0, 0, 0)) << std::endl;
+    */
+
+    m_world->generateArea({-1, -1, -1}, {1, 1, 1});
 
     // Construire le mesh pour tous les chunks chargés
     buildAllChunksMesh();
@@ -108,11 +112,11 @@ void ChunkScene::buildChunkMesh(const ChunkCoord& chunkCoord, VoxelChunk* chunk)
     for (int x = 0; x < VoxelArray::SIZE; ++x) {
         for (int y = 0; y < VoxelArray::SIZE; ++y) {
             for (int z = 0; z < VoxelArray::SIZE; ++z) {
-                Voxel voxel = chunk->get(x, y, z);
-                if (voxel.ID == 0) continue;
+                voxel::ID voxel = chunk->get(x, y, z);
+                if (voxel == 0) continue;
 
                 glm::vec3 pos = chunkOffset + glm::vec3(x, y, z);
-                uint32_t hexColor = voxel::getVoxelColorRGBA(voxel.ID);
+                uint32_t hexColor = voxel::getVoxelColorRGBA(voxel);
 
                 float r = ((hexColor >> 16) & 0xFF) / 255.0f;
                 float g = ((hexColor >> 8)  & 0xFF) / 255.0f;
@@ -147,7 +151,7 @@ bool ChunkScene::isFaceExposed(const ChunkCoord& chunkCoord, VoxelChunk* chunk, 
     if (nx >= 0 && ny >= 0 && nz >= 0 &&
         nx < VoxelArray::SIZE && ny < VoxelArray::SIZE && nz < VoxelArray::SIZE) {
         // Le voisin est dans le même chunk
-        return chunk->get(nx, ny, nz).ID == voxel::AIR;
+        return chunk->get(nx, ny, nz) == voxel::AIR;
     }
 
     // Le voisin est dans un autre chunk, utiliser les coordonnées globales
@@ -155,8 +159,8 @@ bool ChunkScene::isFaceExposed(const ChunkCoord& chunkCoord, VoxelChunk* chunk, 
     int worldY = chunkCoord.y * VoxelArray::SIZE + ny;
     int worldZ = chunkCoord.z * VoxelArray::SIZE + nz;
 
-    Voxel neighborVoxel = m_world->getVoxel(worldX, worldY, worldZ);
-    return neighborVoxel.ID == voxel::AIR;
+    voxel::ID neighborVoxel = m_world->getVoxel(worldX, worldY, worldZ);
+    return neighborVoxel == voxel::AIR;
 }
 
 void ChunkScene::renderAllChunks(const glm::mat4& view, const glm::mat4& projection) {

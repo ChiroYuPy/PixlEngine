@@ -11,7 +11,7 @@
 
 namespace voxel {
 
-    using VoxelID = uint8_t; // 0 = air, max 255 types
+    using ID = uint8_t; // 0 = air, max 255 types
 
     enum class RenderingMode : uint8_t {
         INVISIBLE,   // Air - not rendered at all
@@ -42,7 +42,7 @@ namespace voxel {
     };
 
     // voxel type identifiers
-    enum VoxelTypes : VoxelID {
+    enum VoxelTypes : ID {
         AIR             = 0,
         DIRT            = 1,
         GRASS           = 2,
@@ -64,7 +64,7 @@ namespace voxel {
         // Air - special invisible block
         registry[AIR] = VoxelTypeDefinition{
                 "Air",
-                0x00000000,
+                0x00000000, // fully transparent
                 RenderingMode::INVISIBLE,
                 0.0f,
                 false
@@ -73,7 +73,7 @@ namespace voxel {
         // Terrain blocks
         registry[DIRT] = VoxelTypeDefinition{
                 "Dirt Block",
-                0x8B4513FF,
+                0x80522FFF, // RGB ~ (128, 82, 47), opaque (alpha=255)
                 RenderingMode::SOLID,
                 0.0f,
                 true
@@ -81,7 +81,7 @@ namespace voxel {
 
         registry[GRASS] = VoxelTypeDefinition{
                 "Grass Block",
-                0x228B22FF,
+                0x7CAC17FF, // RGB ~ (124, 172, 23) vert herbe typique
                 RenderingMode::SOLID,
                 0.0f,
                 true
@@ -89,7 +89,7 @@ namespace voxel {
 
         registry[STONE] = VoxelTypeDefinition{
                 "Stone Block",
-                0x696969FF,
+                0x7F7F7FFF, // RGB ~ (127, 127, 127) gris moyen
                 RenderingMode::SOLID,
                 0.0f,
                 true
@@ -97,7 +97,7 @@ namespace voxel {
 
         registry[SAND] = VoxelTypeDefinition{
                 "Sand Block",
-                0xF4A460FF,
+                0xFAF0CFFF, // RGB ~ (250, 240, 207) sable clair
                 RenderingMode::SOLID,
                 0.0f,
                 true
@@ -106,7 +106,7 @@ namespace voxel {
         // Liquid blocks
         registry[WATER] = VoxelTypeDefinition{
                 "Water",
-                0x1E90FF80,
+                0x3F76E480, // RGB ~ (63, 118, 228), alpha 128 (~50% transparent)
                 RenderingMode::TRANSLUCENT,
                 0.0f,
                 false
@@ -114,7 +114,7 @@ namespace voxel {
 
         registry[LAVA] = VoxelTypeDefinition{
                 "Lava",
-                0xFF4500FF,
+                0xCF4A0FFF, // RGB ~ (207, 74, 15) vif, opaque
                 RenderingMode::EMISSIVE,
                 0.9f,
                 false
@@ -123,7 +123,7 @@ namespace voxel {
         // Building materials
         registry[GLASS] = VoxelTypeDefinition{
                 "Glass Block",
-                0xF0F8FF90,
+                0xFFFFFF40, // blanc très transparent (alpha ~ 64 / 255)
                 RenderingMode::TRANSLUCENT,
                 0.0f,
                 true
@@ -131,7 +131,7 @@ namespace voxel {
 
         registry[WOOD] = VoxelTypeDefinition{
                 "Wood Log",
-                0x8B4513FF,
+                0x6B4F2FFF, // RGB ~ (107, 79, 47) marron bois
                 RenderingMode::SOLID,
                 0.0f,
                 true
@@ -139,7 +139,7 @@ namespace voxel {
 
         registry[LEAVES] = VoxelTypeDefinition{
                 "Leaves",
-                0x32CD32C0,
+                0x4C9B23A0, // RGB ~ (76, 155, 35) vert feuille, alpha ~160 (semi transparent)
                 RenderingMode::TRANSLUCENT,
                 0.0f,
                 true
@@ -149,64 +149,64 @@ namespace voxel {
     }();
 
     // Validation functions
-    [[nodiscard]] inline constexpr bool isValidVoxelID(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr bool isValidVoxelID(ID voxelID) noexcept {
         return voxelID <= MAX_TYPE_ID;
     }
 
     // Direct accessor functions
-    [[nodiscard]] inline const VoxelTypeDefinition& getVoxelTypeDefinition(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline const VoxelTypeDefinition& getVoxelTypeDefinition(ID voxelID) noexcept {
         return VOXEL_TYPE_REGISTRY[voxelID];
     }
 
-    [[nodiscard]] inline const std::string& getVoxelDisplayName(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline const std::string& getVoxelDisplayName(ID voxelID) noexcept {
         return VOXEL_TYPE_REGISTRY[voxelID].displayName;
     }
 
-    [[nodiscard]] inline constexpr uint32_t getVoxelColorRGBA(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr uint32_t getVoxelColorRGBA(ID voxelID) noexcept {
         return VOXEL_TYPE_REGISTRY[voxelID].colorRGBA;
     }
 
-    [[nodiscard]] inline constexpr RenderingMode getVoxelRenderingMode(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr RenderingMode getVoxelRenderingMode(ID voxelID) noexcept {
         return VOXEL_TYPE_REGISTRY[voxelID].renderingMode;
     }
 
-    [[nodiscard]] inline constexpr float getVoxelLightEmissionLevel(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr float getVoxelLightEmissionLevel(ID voxelID) noexcept {
         return VOXEL_TYPE_REGISTRY[voxelID].lightEmissionLevel;
     }
 
-    [[nodiscard]] inline constexpr bool doesVoxelHaveCollision(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr bool doesVoxelHaveCollision(ID voxelID) noexcept {
         return VOXEL_TYPE_REGISTRY[voxelID].hasCollision;
     }
 
     // Semantic property query functions
-    [[nodiscard]] inline constexpr bool isVoxelTransparent(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr bool isVoxelTransparent(ID voxelID) noexcept {
         const auto renderMode = getVoxelRenderingMode(voxelID);
         return renderMode == RenderingMode::TRANSLUCENT || renderMode == RenderingMode::INVISIBLE;
     }
 
-    [[nodiscard]] inline constexpr bool isVoxelOpaque(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr bool isVoxelOpaque(ID voxelID) noexcept {
         const auto renderMode = getVoxelRenderingMode(voxelID);
         return renderMode == RenderingMode::SOLID || renderMode == RenderingMode::EMISSIVE;
     }
 
-    [[nodiscard]] inline constexpr bool isVoxelLightEmitting(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr bool isVoxelLightEmitting(ID voxelID) noexcept {
         return getVoxelRenderingMode(voxelID) == RenderingMode::EMISSIVE;
     }
 
-    [[nodiscard]] inline constexpr bool isVoxelAir(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr bool isVoxelAir(ID voxelID) noexcept {
         return voxelID == AIR;
     }
 
-    [[nodiscard]] inline constexpr bool isVoxelLiquid(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr bool isVoxelLiquid(ID voxelID) noexcept {
         return voxelID == WATER || voxelID == LAVA;
     }
 
-    [[nodiscard]] inline constexpr bool isVoxelSolid(VoxelID voxelID) noexcept {
+    [[nodiscard]] inline constexpr bool isVoxelSolid(ID voxelID) noexcept {
         return !isVoxelAir(voxelID) && !isVoxelLiquid(voxelID);
     }
 
     // Rendering optimization functions
-    [[nodiscard]] inline constexpr bool shouldRenderVoxelFace(VoxelID currentVoxel, VoxelID neighborVoxel) noexcept {
+    [[nodiscard]] inline constexpr bool shouldRenderVoxelFace(ID currentVoxel, ID neighborVoxel) noexcept {
         if (currentVoxel == AIR) return false;
         if (neighborVoxel == AIR) return true;
 

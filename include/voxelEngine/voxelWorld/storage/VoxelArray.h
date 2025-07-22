@@ -8,7 +8,7 @@
 
 #include <vector>
 #include <array>
-#include "voxelEngine/voxelWorld/voxel/Voxel.h"
+#include "voxelEngine/voxelWorld/voxel/VoxelType.h"
 
 class VoxelArray {
 public:
@@ -18,17 +18,17 @@ public:
 
     VoxelArray();
 
-    Voxel get(int x, int y, int z) const;
-    void set(int x, int y, int z, Voxel voxel);
+    voxel::ID get(int x, int y, int z) const;
+    void set(int x, int y, int z, voxel::ID voxel);
 
-    void fill(voxel::VoxelID ID);
+    void fill(voxel::ID ID);
 
     double getMemoryUsage();
 
 private:
     static int index(int x, int y, int z);
 
-    std::array<Voxel, VOLUME> voxels;
+    std::array<voxel::ID, VOLUME> voxels;
 };
 
 

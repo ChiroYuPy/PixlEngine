@@ -6,6 +6,7 @@
 #define PIXLENGINE_VOXELCHUNK_H
 
 #include <memory>
+#include <GLT.h>
 #include "voxelEngine/voxelWorld/storage/VoxelArray.h"
 #include "voxelEngine/voxelWorld/utils/DirectionUtils.h"
 
@@ -39,16 +40,21 @@ class VoxelChunk {
 public:
     explicit VoxelChunk(ChunkCoord coord);
 
-    Voxel get(int x, int y, int z) const;
-    void set(int x, int y, int z, Voxel voxel);
+    voxel::ID get(int x, int y, int z) const;
+    void set(int x, int y, int z, voxel::ID voxel);
+
+    voxel::ID get(const glm::ivec3& pos) const;
+    void set(const glm::ivec3& pos, voxel::ID voxel);
 
     void clear();
-    void fill(voxel::VoxelID ID);
+    void fill(voxel::ID ID);
 
     void setNeighbor(CubicDirection direction, VoxelChunk* neighbor);
     VoxelChunk* getNeighbor(CubicDirection direction) const;
 
     void markDirty();
+
+    glm::ivec3 getPosition() const;
 
 private:
     VoxelArray m_storage;

@@ -43,14 +43,15 @@ set(SOURCES
         include/voxelEngine/voxelWorld/chunk/VoxelChunk.h
         src/voxelEngine/voxelWorld/storage/VoxelArray.cpp
         include/voxelEngine/voxelWorld/storage/VoxelArray.h
-        src/voxelEngine/voxelWorld/voxel/Voxel.cpp
-        include/voxelEngine/voxelWorld/voxel/Voxel.h
         src/voxelEngine/voxelWorld/voxel/VoxelType.cpp
         include/voxelEngine/voxelWorld/voxel/VoxelType.h
         src/voxelEngine/CameraController.cpp
         include/voxelEngine/CameraController.h
         src/voxelEngine/voxelWorld/utils/DirectionUtils.cpp
         include/voxelEngine/voxelWorld/utils/DirectionUtils.h
+        include/voxelEngine/voxelWorld/generation/ITerrainGenerator.h
+        src/voxelEngine/voxelWorld/generation/FlatTerrainGenerator.cpp
+        include/voxelEngine/voxelWorld/generation/FlatTerrainGenerator.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)

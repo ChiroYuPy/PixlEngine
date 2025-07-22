@@ -5,7 +5,7 @@
 #include "voxelEngine/voxelWorld/chunk/VoxelChunk.h"
 
 VoxelChunk::VoxelChunk(ChunkCoord coord)
-: m_neighbors{} {
+: m_neighbors{}, m_position(coord) {
     m_neighbors.fill(nullptr);
 }
 
@@ -15,23 +15,32 @@ bool VoxelChunk::isInBounds(int x, int y, int z) {
            z >= 0 && z < VoxelArray::SIZE;
 }
 
-Voxel VoxelChunk::get(int x, int y, int z) const {
-    if (!isInBounds(x, y, z)) return Voxel(voxel::AIR);
+voxel::ID VoxelChunk::get(int x, int y, int z) const {
+    if (!isInBounds(x, y, z)) return voxel::AIR;
 
     return m_storage.get(x, y, z);
 }
 
-void VoxelChunk::set(int x, int y, int z, Voxel voxel) {
+void VoxelChunk::set(int x, int y, int z, voxel::ID voxel) {
     if (!isInBounds(x, y, z)) return;
 
     m_storage.set(x, y, z, voxel);
+}
+
+voxel::ID VoxelChunk::get(const glm::ivec3& pos) const {
+    return get(pos.x, pos.y, pos.z);
+}
+
+
+void VoxelChunk::set(const glm::ivec3& pos, voxel::ID voxel) {
+    set(pos.x, pos.y, pos.z, voxel);
 }
 
 void VoxelChunk::clear() {
     m_storage.fill(voxel::AIR);
 }
 
-void VoxelChunk::fill(voxel::VoxelID ID) {
+void VoxelChunk::fill(voxel::ID ID) {
     m_storage.fill(ID);
 }
 
@@ -51,4 +60,8 @@ VoxelChunk* VoxelChunk::getNeighbor(CubicDirection direction) const {
 
 void VoxelChunk::markDirty() {
     m_dirty = true;
+}
+
+glm::ivec3 VoxelChunk::getPosition() const {
+    return {m_position.x, m_position.y, m_position.z};
 }

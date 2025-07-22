@@ -9,16 +9,16 @@ VoxelArray::VoxelArray() : voxels{} {
     fill(voxel::AIR);
 }
 
-Voxel VoxelArray::get(int x, int y, int z) const {
+voxel::ID VoxelArray::get(int x, int y, int z) const {
     return voxels[index(x, y, z)];
 }
 
-void VoxelArray::set(int x, int y, int z, Voxel voxel) {
+void VoxelArray::set(int x, int y, int z, voxel::ID voxel) {
     voxels[index(x, y, z)] = voxel;
 }
 
-void VoxelArray::fill(voxel::VoxelID ID) {
-    voxels.fill(Voxel(ID));
+void VoxelArray::fill(voxel::ID ID) {
+    voxels.fill(ID);
 }
 
 int VoxelArray::index(int x, int y, int z) {
@@ -30,6 +30,6 @@ int VoxelArray::index(int x, int y, int z) {
 }
 
 double VoxelArray::getMemoryUsage() {
-    return static_cast<double>(VOLUME) * sizeof(Voxel);
+    return static_cast<double>(VOLUME) * sizeof(voxel::ID);
 }
 
