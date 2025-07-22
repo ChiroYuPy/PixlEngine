@@ -10,12 +10,13 @@ class Shader;
 
 class ChunkRenderer {
 public:
-    ChunkRenderer(World& world);
+    ChunkRenderer(World& world, Shader& shader);
     void buildAll();
-    void renderAll(Shader& shader);
+    void renderAll();
 
 private:
     World& m_world;
+    Shader& m_shader;
 };
 
 

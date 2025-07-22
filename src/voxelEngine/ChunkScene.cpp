@@ -9,6 +9,15 @@
 #include "utils/Logger.h"
 
 bool ChunkScene::initialize() {
+    setupCamera();
+    setupShader();
+    setupWorld();
+    setupInput();
+
+    return m_shader && m_world && m_cameraController;
+}
+
+void ChunkScene::setupCamera() {
     m_camera = std::make_shared<Camera>();
     m_camera->setPosition({64.f, 64.f, 64.f});
     m_camera->setFOV(70.f);
@@ -16,24 +25,27 @@ bool ChunkScene::initialize() {
 
     auto* input = Application::getInstance().getInputManager();
     m_cameraController = std::make_unique<CameraController>(input, m_camera);
+}
 
-    m_chunkShader = std::make_unique<Shader>();
-
-    if (!m_chunkShader->loadFromFiles("resources/shaders/chunk.vert", "resources/shaders/chunk.frag")) {
+void ChunkScene::setupShader() {
+    m_shader = std::make_unique<Shader>();
+    if (!m_shader->loadFromFiles("resources/shaders/chunk.vert", "resources/shaders/chunk.frag")) {
         std::cerr << "Failed to load chunk shaders" << std::endl;
-        return false;
+        throw std::runtime_error("Shader load failed");
     }
+}
 
+void ChunkScene::setupWorld() {
     m_world = std::make_unique<World>();
+    m_chunkRenderer = std::make_unique<ChunkRenderer>(*m_world, *m_shader);
 
-    try {
-        constexpr unsigned int SIZE = 12;
-        m_world->generateArea({-(SIZE-1), -1, -(SIZE-1)}, {SIZE, 1, SIZE});
-        buildAllChunksMesh();
-    } catch (const std::exception& e) {
-        std::cerr << "Error during world generation: " << e.what() << std::endl;
-        return false;
-    }
+    constexpr unsigned int SIZE = 12;
+    m_world->generateArea({-(SIZE - 1), -1, -(SIZE - 1)}, {SIZE, 1, SIZE});
+    m_chunkRenderer->buildAll();
+}
+
+void ChunkScene::setupInput() {
+    auto* input = Application::getInstance().getInputManager();
 
     input->setKeyCallback([this](int key, KeyState state) {
         if (key == GLFW_KEY_ESCAPE && state == KeyState::Pressed) {
@@ -50,8 +62,6 @@ bool ChunkScene::initialize() {
             m_cameraController->setActive(true);
         }
     });
-
-    return true;
 }
 
 void ChunkScene::update(float deltaTime) {
@@ -63,7 +73,7 @@ void ChunkScene::render() {
     auto* renderer = Application::getInstance().getRenderer();
     auto* window = Application::getInstance().getWindow();
 
-    if (!renderer || !window || !m_camera || !m_chunkShader) {
+    if (!renderer || !window || !m_camera || !m_shader) {
         Logger::warn("render aborted, missing some components");
         return;
     }
@@ -73,32 +83,16 @@ void ChunkScene::render() {
     glm::mat4 view = m_camera->getViewMatrix();
     glm::mat4 proj = m_camera->getProjectionMatrix(aspectRatio);
 
-    m_chunkShader->use();
-    m_chunkShader->setMat4("u_View", view);
-    m_chunkShader->setMat4("u_Projection", proj);
+    m_shader->use();
+    m_shader->setMat4("u_View", view);
+    m_shader->setMat4("u_Projection", proj);
 
-    renderAllChunks();
+    m_chunkRenderer->renderAll();
 }
 
 void ChunkScene::shutdown() {
-    m_chunkShader.reset();
+    m_shader.reset();
     m_camera.reset();
     m_world.reset();
     m_cameraController.reset();
-}
-
-void ChunkScene::buildAllChunksMesh() {
-    if (!m_world) return;
-    m_world->forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
-        if (chunk) chunk->buildMesh(*m_world);
-    });
-}
-
-void ChunkScene::renderAllChunks() {
-    m_world->forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
-        if (chunk) {
-            const ChunkMesh* mesh = chunk->getMesh();
-            if (mesh) mesh->render(*m_chunkShader);
-        }
-    });
 }

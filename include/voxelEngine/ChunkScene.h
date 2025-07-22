@@ -13,6 +13,7 @@
 #include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
 #include "CameraController.h"
 #include "voxelEngine/voxelWorld/world/World.h"
+#include "voxelEngine/voxelWorld/world/ChunkRenderer.h"
 
 class ChunkScene : public Scene {
 public:
@@ -24,12 +25,14 @@ public:
 private:
     std::shared_ptr<Camera> m_camera;
     std::unique_ptr<CameraController> m_cameraController;
-    std::unique_ptr<Shader> m_chunkShader;
+    std::unique_ptr<Shader> m_shader;
     std::unique_ptr<World> m_world;
+    std::unique_ptr<ChunkRenderer> m_chunkRenderer;
 
-    // Méthodes pour la gestion des chunks
-    void buildAllChunksMesh();
-    void renderAllChunks();
+    void setupCamera();
+    void setupShader();
+    void setupWorld();
+    void setupInput();
 };
 
 #endif //PIXLENGINE_CHUNKSCENE_H
