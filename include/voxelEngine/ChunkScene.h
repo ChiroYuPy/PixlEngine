@@ -13,7 +13,7 @@
 #include "utils/MeshGenerator.h"
 #include "voxelEngine/voxelWorld/world/World.h"
 #include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
-#include "voxelEngine/voxelWorld/world/BlockPlacer.h"
+#include "voxelEngine/voxelWorld/world/WorldInteractor.h"
 #include "voxelEngine/voxelWorld/world/ChunkRenderer.h"
 
 class ChunkScene : public Scene {
@@ -35,7 +35,7 @@ private:
     std::unique_ptr<Shader> m_shader;
     std::unique_ptr<World> m_world;
     std::unique_ptr<ChunkRenderer> m_chunkRenderer;
-    std::unique_ptr<BlockPlacer> m_blockPlacer;
+    std::unique_ptr<WorldInteractor> m_blockPlacer;
 
     glm::ivec3 m_targetedBlockPos;
     bool m_hasTargetedBlock = false;

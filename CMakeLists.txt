@@ -50,7 +50,7 @@ set(SOURCES
         src/voxelEngine/voxelWorld/world/ChunkRenderer.cpp
         src/voxelEngine/voxelWorld/world/WorldGenerator.cpp
         src/voxelEngine/voxelWorld/world/VoxelRaycaster.cpp
-        src/voxelEngine/voxelWorld/world/BlockPlacer.cpp
+        src/voxelEngine/voxelWorld/world/WorldInteractor.cpp
         src/graphics/objects/Buffer.cpp
         include/graphics/objects/Buffer.h
         src/graphics/objects/VertexArray.cpp

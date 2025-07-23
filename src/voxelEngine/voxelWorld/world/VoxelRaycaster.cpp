@@ -6,8 +6,8 @@
 #include "voxelEngine/voxelWorld/world/World.h"
 #include <algorithm>
 
-VoxelRaycaster::VoxelRaycaster(World& world, float maxDistance)
-        : m_world(world), m_maxDistance(maxDistance) {
+VoxelRaycaster::VoxelRaycaster(World& world)
+        : m_world(world), m_maxDistance(10.f) {
 }
 
 std::optional<RaycastHit> VoxelRaycaster::raycast(const glm::vec3& origin, const glm::vec3& direction) const {

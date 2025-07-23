@@ -9,11 +9,11 @@ namespace voxel {
 
     // Implémentation du constructeur
     VoxelTypeDefinition::VoxelTypeDefinition(std::string_view displayName, const Color &color,
-                                             RenderingMode renderingMode, float lightEmissionLevel,
+                                             RenderMode renderingMode, float lightEmissionLevel,
                                              bool hasCollision)
             : displayName(displayName),
               color(color),
-              renderingMode(renderingMode),
+              renderMode(renderingMode),
               lightEmissionLevel(lightEmissionLevel),
               hasCollision(hasCollision) {}
 
@@ -48,9 +48,9 @@ namespace voxel {
         }
     }
 
-    void VoxelTypeRegistry::setRenderingMode(ID voxelID, RenderingMode mode) noexcept {
+    void VoxelTypeRegistry::setRenderingMode(ID voxelID, RenderMode mode) noexcept {
         if (isValidVoxelID(voxelID)) {
-            registry[voxelID].renderingMode = mode;
+            registry[voxelID].renderMode = mode;
         }
     }
 
@@ -81,40 +81,40 @@ namespace voxel {
         // Définir les types de base
         registry[AIR] = VoxelTypeDefinition{
                 "Air",
-                Color::fromHex(0x00000000, true),
-                RenderingMode::INVISIBLE,
+                Color::fromHex(0x000000),
+                RenderMode::INVISIBLE,
                 0.0f,
                 false
         };
 
         registry[DIRT] = VoxelTypeDefinition{
                 "Dirt Block",
-                Color::fromHex(0x80522FFF, true),
-                RenderingMode::SOLID,
+                Color::fromHex(0x80522F),
+                RenderMode::OPAQUE,
                 0.0f,
                 true
         };
 
         registry[GRASS] = VoxelTypeDefinition{
                 "Grass Block",
-                Color::fromHex(0x7CAC17FF, true),
-                RenderingMode::SOLID,
+                Color::fromHex(0x7CAC17),
+                RenderMode::OPAQUE,
                 0.0f,
                 true
         };
 
         registry[STONE] = VoxelTypeDefinition{
                 "Stone Block",
-                Color::fromHex(0x7F7F7FFF, true),
-                RenderingMode::SOLID,
+                Color::fromHex(0x7F7F7F),
+                RenderMode::OPAQUE,
                 0.0f,
                 true
         };
 
         registry[SAND] = VoxelTypeDefinition{
                 "Sand Block",
-                Color::fromHex(0xFAF0CFFF, true),
-                RenderingMode::SOLID,
+                Color::fromHex(0xFAF0CF),
+                RenderMode::OPAQUE,
                 0.0f,
                 true
         };
@@ -122,15 +122,15 @@ namespace voxel {
         registry[WATER] = VoxelTypeDefinition{
                 "Water",
                 Color::fromHex(0x3F76E480, true),
-                RenderingMode::TRANSLUCENT,
+                RenderMode::TRANSPARENT,
                 0.0f,
                 false
         };
 
         registry[LAVA] = VoxelTypeDefinition{
                 "Lava",
-                Color::fromHex(0xCF4A0FFF, true),
-                RenderingMode::EMISSIVE,
+                Color::fromHex(0xCF4A0F),
+                RenderMode::EMISSIVE,
                 0.9f,
                 false
         };
@@ -138,15 +138,15 @@ namespace voxel {
         registry[GLASS] = VoxelTypeDefinition{
                 "Glass Block",
                 Color::fromHex(0xFFFFFF40, true),
-                RenderingMode::TRANSLUCENT,
+                RenderMode::TRANSPARENT,
                 0.0f,
                 true
         };
 
         registry[WOOD] = VoxelTypeDefinition{
                 "Wood Log",
-                Color::fromHex(0x6B4F2FFF, true),
-                RenderingMode::SOLID,
+                Color::fromHex(0x6B4F2F),
+                RenderMode::OPAQUE,
                 0.0f,
                 true
         };
@@ -154,7 +154,7 @@ namespace voxel {
         registry[LEAVES] = VoxelTypeDefinition{
                 "Leaves",
                 Color::fromHex(0x4C9B23A0, true),
-                RenderingMode::TRANSLUCENT,
+                RenderMode::TRANSPARENT,
                 0.0f,
                 true
         };
@@ -177,8 +177,8 @@ namespace voxel {
         return getVoxelTypeDefinition(voxelID).color;
     }
 
-    RenderingMode getVoxelRenderingMode(ID voxelID) noexcept {
-        return getVoxelTypeDefinition(voxelID).renderingMode;
+    RenderMode getRenderMode(ID voxelID) noexcept {
+        return getVoxelTypeDefinition(voxelID).renderMode;
     }
 
     float getVoxelLightEmissionLevel(ID voxelID) noexcept {
@@ -190,17 +190,17 @@ namespace voxel {
     }
 
     bool isVoxelTransparent(ID voxelID) noexcept {
-        RenderingMode mode = getVoxelRenderingMode(voxelID);
-        return mode == RenderingMode::TRANSLUCENT || mode == RenderingMode::INVISIBLE;
+        RenderMode mode = getRenderMode(voxelID);
+        return mode == RenderMode::TRANSPARENT || mode == RenderMode::INVISIBLE;
     }
 
     bool isVoxelOpaque(ID voxelID) noexcept {
-        RenderingMode mode = getVoxelRenderingMode(voxelID);
-        return mode == RenderingMode::SOLID || mode == RenderingMode::EMISSIVE;
+        RenderMode mode = getRenderMode(voxelID);
+        return mode == RenderMode::OPAQUE || mode == RenderMode::EMISSIVE;
     }
 
     bool isVoxelLightEmitting(ID voxelID) noexcept {
-        return getVoxelRenderingMode(voxelID) == RenderingMode::EMISSIVE;
+        return getRenderMode(voxelID) == RenderMode::EMISSIVE;
     }
 
     bool isVoxelAir(ID voxelID) noexcept {
@@ -237,7 +237,7 @@ namespace voxel {
         VoxelTypeRegistry::getInstance().setColor(voxelID, newColor);
     }
 
-    void modifyVoxelRenderingMode(ID voxelID, RenderingMode newMode) noexcept {
+    void modifyVoxelRenderingMode(ID voxelID, RenderMode newMode) noexcept {
         VoxelTypeRegistry::getInstance().setRenderingMode(voxelID, newMode);
     }
 

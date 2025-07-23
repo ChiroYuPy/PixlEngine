@@ -2,8 +2,8 @@
 // Created by ChiroYuki on 22/07/2025.
 //
 
-#ifndef PIXLENGINE_BLOCKPLACER_H
-#define PIXLENGINE_BLOCKPLACER_H
+#ifndef PIXLENGINE_WORLDINTERACTOR_H
+#define PIXLENGINE_WORLDINTERACTOR_H
 
 #include <memory>
 #include "voxelEngine/voxelWorld/world/VoxelRaycaster.h"
@@ -12,9 +12,9 @@ class World;
 class ChunkRenderer;
 class Camera;
 
-class BlockPlacer {
+class WorldInteractor {
 public:
-    BlockPlacer(World& world, ChunkRenderer& chunkRenderer);
+    WorldInteractor(World& world, ChunkRenderer& chunkRenderer);
 
     bool placeBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection, int blockType = 1);
     bool breakBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection);
@@ -39,4 +39,4 @@ private:
     int m_selectedBlockType;
 };
 
-#endif //PIXLENGINE_BLOCKPLACER_H
+#endif //PIXLENGINE_WORLDINTERACTOR_H

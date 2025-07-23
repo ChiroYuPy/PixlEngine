@@ -57,7 +57,12 @@ void ChunkMesh::uploadInstances(const std::vector<FaceInstance>& instances) {
     Logger::warn(std::format("{}", instanceCount));
 }
 
+void ChunkMesh::setupBuffers() {
+
+}
+
 void ChunkMesh::draw() const {
+    if (instanceCount == 0) return;
     vao.bind();
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)instanceCount);
     vao.unbind();

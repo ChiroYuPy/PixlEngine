@@ -48,8 +48,8 @@ void ChunkScene::setupWorld() {
 }
 
 void ChunkScene::setupBlockPlacer() {
-    m_blockPlacer = std::make_unique<BlockPlacer>(*m_world, *m_chunkRenderer);
-    m_blockPlacer->setMaxReach(10.0f);
+    m_blockPlacer = std::make_unique<WorldInteractor>(*m_world, *m_chunkRenderer);
+    m_blockPlacer->setMaxReach(64.0f);
     m_blockPlacer->setSelectedBlockType(1);
 }
 

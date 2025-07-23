@@ -49,13 +49,17 @@ glm::ivec3 Chunk::getPosition() const {
 void Chunk::buildMesh(const World& world) {
     if (!m_dirty) return;
 
-    std::vector<FaceInstance> visibleFaces;
+    std::vector<FaceInstance> opaqueFaces;
+    std::vector<FaceInstance> transparentFaces;
+    std::vector<FaceInstance> emissiveFaces;
 
     for (int x = 0; x < VoxelArray::SIZE; ++x) {
         for (int y = 0; y < VoxelArray::SIZE; ++y) {
             for (int z = 0; z < VoxelArray::SIZE; ++z) {
                 voxel::ID voxel = get(x, y, z);
                 if (voxel == voxel::AIR) continue;
+
+                voxel::RenderMode type = voxel::getRenderMode(voxel);
 
                 for (int i = 0; i < 6; ++i) {
                     CubicDirection dir = DirectionUtils::fromIndex(i);
@@ -74,35 +78,50 @@ void Chunk::buildMesh(const World& world) {
                     }
 
                     if (exposed) {
-                        // Position mondiale correcte du voxel
                         glm::ivec3 worldPos = glm::ivec3(
                                 m_position.x * VoxelArray::SIZE + x,
                                 m_position.y * VoxelArray::SIZE + y,
                                 m_position.z * VoxelArray::SIZE + z
                         );
 
-                        visibleFaces.push_back({
-                                                       worldPos,
-                                                       (uint8_t)i,
-                                                       (uint8_t)voxel
-                                               });
+                        FaceInstance face = {worldPos, (uint8_t)i, (uint8_t)voxel};
+
+                        // Ajout dans le buffer correspondant au type
+                        switch (type) {
+                            case voxel::RenderMode::OPAQUE:
+                                opaqueFaces.push_back(face);
+                                break;
+                            case voxel::RenderMode::TRANSPARENT:
+                                transparentFaces.push_back(face);
+                                break;
+                            case voxel::RenderMode::EMISSIVE:
+                                emissiveFaces.push_back(face);
+                                break;
+                            default:
+                                opaqueFaces.push_back(face); // fallback
+                                break;
+                        }
                     }
                 }
             }
         }
     }
 
-    m_mesh.uploadInstances(visibleFaces);
+    m_opaqueMesh.uploadInstances(opaqueFaces);
+    m_transparentMesh.uploadInstances(transparentFaces);
+    m_emissiveMesh.uploadInstances(emissiveFaces);
+
     m_dirty = false;
 }
 
-const ChunkMesh& Chunk::getMesh() const {
-    return m_mesh;
+void Chunk::drawOpaque() const {
+    m_opaqueMesh.draw();
 }
 
-void Chunk::draw(Shader& shader) const {
-    glm::ivec3 position = {m_position.x, m_position.y, m_position.z};
-    glm::mat4 model = glm::mat4(1.0f);
-    shader.setMat4("u_Model", model);
-    m_mesh.draw();
+void Chunk::drawTransparent() const {
+    m_transparentMesh.draw();
+}
+
+void Chunk::drawEmissive() const {
+    m_emissiveMesh.draw();
 }

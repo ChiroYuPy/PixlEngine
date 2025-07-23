@@ -19,7 +19,7 @@ struct RaycastHit {
 
 class VoxelRaycaster {
 public:
-    explicit VoxelRaycaster(World& world, float maxDistance = 10.0f);
+    explicit VoxelRaycaster(World& world);
 
     // Effectue un raycast depuis une position dans une direction
     [[nodiscard]] std::optional<RaycastHit> raycast(const glm::vec3& origin, const glm::vec3& direction) const;
