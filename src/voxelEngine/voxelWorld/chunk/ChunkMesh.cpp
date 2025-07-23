@@ -11,13 +11,7 @@ ChunkMesh::ChunkMesh()
         : vertexBuffer(BufferType::Vertex),
           instanceBuffer(BufferType::Instance) {
 
-    vao.bind();
-
     setupVertexAttribs();
-
-    vao.unbind();
-    vertexBuffer.unbind();
-    instanceBuffer.unbind();
 }
 
 ChunkMesh::~ChunkMesh() {
@@ -25,7 +19,7 @@ ChunkMesh::~ChunkMesh() {
 }
 
 void ChunkMesh::setupVertexAttribs() {
-    // VAO déjà bindé à l'appel
+    vao.bind();
 
     // Vertex attrib position (location=0)
     vertexBuffer.bind();
@@ -48,6 +42,10 @@ void ChunkMesh::setupVertexAttribs() {
     glEnableVertexAttribArray(3);
     glVertexAttribIPointer(3, 1, GL_UNSIGNED_BYTE, sizeof(FaceInstance), (void*)(offsetof(FaceInstance, voxelID)));
     glVertexAttribDivisor(3, 1);
+
+    vao.unbind();
+    vertexBuffer.unbind();
+    instanceBuffer.unbind();
 }
 
 void ChunkMesh::uploadInstances(const std::vector<FaceInstance>& instances) {
