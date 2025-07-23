@@ -32,6 +32,10 @@ void ChunkRenderer::renderAll() {
     glBindTexture(GL_TEXTURE_1D, m_palette.getTextureID());
     m_shader.setInt("u_ColorTex", 0);
 
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+    glDisable(GL_BLEND);
+
     m_world.forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
         if (chunk) chunk->drawOpaque();
     });
@@ -40,7 +44,14 @@ void ChunkRenderer::renderAll() {
         if (chunk) chunk->drawEmissive();
     });
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+
     m_world.forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
         if (chunk) chunk->drawTransparent();
     });
+
+    glDepthMask(GL_TRUE);
+    glDisable(GL_BLEND);
 }

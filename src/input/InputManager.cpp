@@ -164,13 +164,11 @@ void InputManager::mouseButtonCallbackGLFW(GLFWwindow* window, int button, int a
     if (!input || !input->m_initialized) return;
 
     KeyState state;
-    if (action == GLFW_PRESS) {
+    if (action == GLFW_PRESS)
         state = KeyState::Pressed;
-    } else if (action == GLFW_RELEASE) {
+    else if (action == GLFW_RELEASE)
         state = KeyState::Released;
-    } else {
-        return;
-    }
+    else return;
 
     input->m_mouseStates[button] = state;
 

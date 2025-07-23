@@ -2,8 +2,10 @@
 #include "core/Application.h"
 #include "platform/Platform.h"
 #include "voxelEngine/ChunkScene.h"
+#include "utils/Logger.h"
 
 int main() {
+    Logger::setLevel(LogLevel::Debug);
     Platform::enableAnsiColors();
     Application& app = Application::getInstance();
 
@@ -26,6 +28,5 @@ int main() {
     return 0;
 }
 
-//TODO: Shadows
 //TODO: Tchat/Console
 //TODO: Schematics

@@ -19,13 +19,11 @@ TextureColorPalette::~TextureColorPalette() {
 }
 
 void TextureColorPalette::updateFromRegistry() {
-    using namespace voxel;
 
     for (size_t i = 0; i < MAX_COLORS; ++i) {
-        const Color& c = VoxelTypeRegistry::getInstance().getDefinition(static_cast<ID>(i)).color;
+        const Color& c = voxel::getVoxelColor(static_cast<voxel::ID>(i));
 
-        // Convertir Color en glm::vec3 (supposé RGBA dans [0,1])
-        m_colors[i] = glm::vec3(c.getRf(), c.getGf(), c.getBf());  // Ignorer alpha ici (ou l’utiliser si tu veux)
+        m_colors[i] = glm::vec3(c.getRf(), c.getGf(), c.getBf());
     }
 
     glBindTexture(GL_TEXTURE_1D, m_textureID);

@@ -10,7 +10,7 @@
 
 class TextureColorPalette {
 public:
-    static constexpr size_t MAX_COLORS = 256;
+    static constexpr size_t MAX_COLORS = 255;
 
     TextureColorPalette();
     ~TextureColorPalette();
