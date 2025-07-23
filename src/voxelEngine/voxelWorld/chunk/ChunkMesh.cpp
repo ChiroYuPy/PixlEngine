@@ -8,9 +8,7 @@
 #include "utils/Logger.h"
 
 ChunkMesh::ChunkMesh()
-        : vertexBuffer(BufferType::Vertex),
-          instanceBuffer(BufferType::Instance) {
-
+: vertexBuffer(BufferType::Vertex), instanceBuffer(BufferType::Instance) {
     setupVertexAttribs();
 }
 
