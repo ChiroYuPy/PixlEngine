@@ -12,9 +12,8 @@
 
 class VoxelArray {
 public:
-    static const int SIZE = 16;
-    static const int AREA = SIZE * SIZE;
-    static const int VOLUME = AREA * SIZE;
+    static const int SIZE = 32;
+    static const int VOLUME = SIZE * SIZE * SIZE;
 
     VoxelArray();
 
