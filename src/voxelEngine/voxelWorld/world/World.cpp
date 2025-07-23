@@ -112,13 +112,33 @@ void World::forEachChunk(const std::function<void(const ChunkCoord &, Chunk *)> 
         func(coord, chunk.get());
 }
 
+inline void printProgressBar(float progress, int barWidth = 40) {
+    int filled = static_cast<int>(progress * barWidth);
+    std::cout << '\r' << '[';
+    for (int i = 0; i < barWidth; ++i)
+        std::cout << (i < filled ? '=' : (i == filled ? '>' : ' '));
+    std::cout << "] " << static_cast<int>(progress * 100.0f) << " %" << std::flush;
+}
+
 void World::generateArea(const glm::ivec3 &startPos, const glm::ivec3 &endPos) {
     for (auto& [coord, chunk] : m_chunks)
         chunk->fill(voxel::AIR);
+
+    const int total = (endPos.x - startPos.x + 1) *
+                      (endPos.y - startPos.y + 1) *
+                      (endPos.z - startPos.z + 1);
+
+    int current = 0;
     for (int cx = startPos.x; cx <= endPos.x; ++cx)
         for (int cy = startPos.y; cy <= endPos.y; ++cy)
             for (int cz = startPos.z; cz <= endPos.z; ++cz) {
                 Chunk* chunk = getOrCreateChunk(cx, cy, cz);
                 m_generator->generateChunk(*chunk);
+                ++current;
+
+                float progress = static_cast<float>(current) / total;
+                printProgressBar(progress);
             }
+
+    std::cout << std::endl;
 }

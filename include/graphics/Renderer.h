@@ -37,13 +37,6 @@ public:
     void clear(const glm::vec3& color = glm::vec3(0.2f, 0.3f, 0.3f));
     void setViewport(int x, int y, int width, int height);
 
-    // Rendu basique
-    template<typename VertexType>
-    void drawMesh(const Mesh<VertexType>& mesh, Shader& shader, const glm::mat4& transform);
-
-    template<typename VertexType>
-    void drawWireframe(const Mesh<VertexType>& mesh, Shader& shader, const glm::mat4& transform);
-
     // Configuration
     void enableDepthTest(bool enable = true);
     void enableFaceCulling(bool enable = true);

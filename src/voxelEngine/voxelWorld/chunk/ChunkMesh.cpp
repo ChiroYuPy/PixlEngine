@@ -8,8 +8,9 @@
 #include "utils/Logger.h"
 
 ChunkMesh::ChunkMesh()
-: vertexBuffer(BufferType::Vertex), instanceBuffer(BufferType::Instance) {
+: instanceBuffer(BufferType::Instance) {
     setupVertexAttribs();
+    setupBuffers();
 }
 
 ChunkMesh::~ChunkMesh() {
@@ -19,37 +20,20 @@ ChunkMesh::~ChunkMesh() {
 void ChunkMesh::setupVertexAttribs() {
     vao.bind();
 
-    // Vertex attrib position (location=0)
-    vertexBuffer.bind();
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void*)0);
-
-    // Instance attrib position (location=1)
     instanceBuffer.bind();
-
     glEnableVertexAttribArray(1);
-    glVertexAttribIPointer(1, 3, GL_INT, sizeof(FaceInstance), (void*)0);
+    glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(FaceInstance), (void*)nullptr);
     glVertexAttribDivisor(1, 1);
 
-    // Instance attrib faceID (location=2)
-    glEnableVertexAttribArray(2);
-    glVertexAttribIPointer(2, 1, GL_UNSIGNED_BYTE, sizeof(FaceInstance), (void*)(offsetof(FaceInstance, faceID)));
-    glVertexAttribDivisor(2, 1);
-
-    // Instance attrib voxelID (location=3)
-    glEnableVertexAttribArray(3);
-    glVertexAttribIPointer(3, 1, GL_UNSIGNED_BYTE, sizeof(FaceInstance), (void*)(offsetof(FaceInstance, voxelID)));
-    glVertexAttribDivisor(3, 1);
-
-    vao.unbind();
-    vertexBuffer.unbind();
     instanceBuffer.unbind();
+    vao.unbind();
 }
 
 void ChunkMesh::uploadInstances(const std::vector<FaceInstance>& instances) {
     instanceBuffer.bind();
     instanceBuffer.uploadData(instances.data(), instances.size() * sizeof(FaceInstance), GL_DYNAMIC_DRAW);
     instanceCount = instances.size();
+    instanceBuffer.unbind();
 }
 
 void ChunkMesh::setupBuffers() {
@@ -58,7 +42,8 @@ void ChunkMesh::setupBuffers() {
 
 void ChunkMesh::draw() const {
     if (instanceCount == 0) return;
+
     vao.bind();
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)instanceCount);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, static_cast<GLsizei>(instanceCount));
     vao.unbind();
 }

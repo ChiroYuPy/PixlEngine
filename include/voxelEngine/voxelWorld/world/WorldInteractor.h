@@ -37,6 +37,10 @@ private:
     std::unique_ptr<VoxelRaycaster> m_raycaster;
 
     int m_selectedBlockType;
+
+    bool placeSphere(const glm::ivec3 &center, int radius, int blockType);
+
+    bool breakSphere(const glm::ivec3 &center, int radius);
 };
 
 #endif //PIXLENGINE_WORLDINTERACTOR_H

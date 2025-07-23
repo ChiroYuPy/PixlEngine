@@ -165,7 +165,6 @@ voxel::ID NaturalTerrainGenerator::generateVoxel(const glm::ivec3 &worldPos) {
 
 void NaturalTerrainGenerator::generateChunk(Chunk &voxelChunk) {
     const glm::ivec3 chunkPos = voxelChunk.getPosition();
-    Logger::info(std::format("chunkPos: {}, {}, {}", chunkPos.x, chunkPos.y, chunkPos.z));
 
     // Première passe : génération du terrain de base
     for (int y = 0; y < VoxelArray::SIZE; ++y) {

@@ -20,12 +20,10 @@ void ChunkRenderer::renderAll() {
 
     glm::mat4 view = m_camera.getViewMatrix();
     glm::mat4 proj = m_camera.getProjectionMatrix(aspectRatio);
-    auto model = glm::mat4(1.0f);
 
     m_shader.use();
     m_shader.setMat4("u_View", view);
     m_shader.setMat4("u_Projection", proj);
-    m_shader.setMat4("u_Model", model);
 
     // Bind la palette de couleurs 1D sur l'unité 0
     glActiveTexture(GL_TEXTURE0);
@@ -37,11 +35,11 @@ void ChunkRenderer::renderAll() {
     glDisable(GL_BLEND);
 
     m_world.forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
-        if (chunk) chunk->drawOpaque();
+        if (chunk) chunk->drawOpaque(m_shader);
     });
 
     m_world.forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
-        if (chunk) chunk->drawEmissive();
+        if (chunk) chunk->drawEmissive(m_shader);
     });
 
     glEnable(GL_BLEND);
@@ -49,7 +47,7 @@ void ChunkRenderer::renderAll() {
     glDepthMask(GL_FALSE);
 
     m_world.forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
-        if (chunk) chunk->drawTransparent();
+        if (chunk) chunk->drawTransparent(m_shader);
     });
 
     glDepthMask(GL_TRUE);

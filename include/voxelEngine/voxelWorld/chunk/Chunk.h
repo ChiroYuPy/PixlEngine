@@ -56,9 +56,9 @@ public:
 
     void buildMesh(const World& world);
 
-    void drawOpaque() const;
-    void drawTransparent() const;
-    void drawEmissive() const;
+    void drawOpaque(Shader& shader) const;
+    void drawTransparent(Shader& shader) const;
+    void drawEmissive(Shader& shader) const;
 
 private:
     ChunkCoord m_position;

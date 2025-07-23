@@ -56,37 +56,44 @@ void Chunk::buildMesh(const World& world) {
     for (int x = 0; x < VoxelArray::SIZE; ++x) {
         for (int y = 0; y < VoxelArray::SIZE; ++y) {
             for (int z = 0; z < VoxelArray::SIZE; ++z) {
-                voxel::ID voxel = get(x, y, z);
-                if (voxel == voxel::AIR) continue;
+                voxel::ID voxelID = get(x, y, z);
+                if (voxelID == voxel::AIR) continue;
 
-                voxel::RenderMode type = voxel::getRenderMode(voxel);
+                voxel::RenderMode type = voxel::getRenderMode(voxelID);
 
-                for (int i = 0; i < 6; ++i) {
-                    CubicDirection dir = DirectionUtils::fromIndex(i);
+                for (uint8_t faceID = 0; faceID < 6; ++faceID) {
+                    CubicDirection dir = DirectionUtils::fromIndex(faceID);
                     glm::ivec3 offset = DirectionUtils::getOffset(dir);
                     int nx = x + offset.x, ny = y + offset.y, nz = z + offset.z;
 
-                    bool exposed = false;
+                    voxel::ID neighborVoxelID;
+
                     if (nx >= 0 && ny >= 0 && nz >= 0 &&
                         nx < VoxelArray::SIZE && ny < VoxelArray::SIZE && nz < VoxelArray::SIZE) {
-                        exposed = get(nx, ny, nz) == voxel::AIR;
+                        neighborVoxelID = get(nx, ny, nz);
                     } else {
                         int wx = m_position.x * VoxelArray::SIZE + nx;
                         int wy = m_position.y * VoxelArray::SIZE + ny;
                         int wz = m_position.z * VoxelArray::SIZE + nz;
-                        exposed = world.getVoxel(wx, wy, wz) == voxel::AIR;
+                        neighborVoxelID = world.getVoxel(wx, wy, wz);
                     }
 
-                    if (exposed) {
-                        glm::ivec3 worldPos = glm::ivec3(
-                                m_position.x * VoxelArray::SIZE + x,
-                                m_position.y * VoxelArray::SIZE + y,
-                                m_position.z * VoxelArray::SIZE + z
-                        );
+                    bool visible = false;
 
-                        FaceInstance face = {worldPos, (uint8_t)i, (uint8_t)voxel};
+                    if (neighborVoxelID == voxel::AIR)
+                        visible = true;
+                    else {
+                        // Face entre un voxelID opaque/émissif et un transparent
+                        voxel::RenderMode neighborType = voxel::getRenderMode(neighborVoxelID);
+                        if ((type == voxel::RenderMode::OPAQUE || type == voxel::RenderMode::EMISSIVE) &&
+                            neighborType == voxel::RenderMode::TRANSPARENT) {
+                            visible = true;
+                        }
+                    }
 
-                        // Ajout dans le buffer correspondant au type
+                    if (visible) {
+                        FaceInstance face = FaceInstance{glm::ivec3(x, y, z), faceID, voxelID};
+
                         switch (type) {
                             case voxel::RenderMode::OPAQUE:
                                 opaqueFaces.push_back(face);
@@ -114,14 +121,17 @@ void Chunk::buildMesh(const World& world) {
     m_dirty = false;
 }
 
-void Chunk::drawOpaque() const {
+void Chunk::drawOpaque(Shader& shader) const {
+    shader.setVec3("u_chunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
     m_opaqueMesh.draw();
 }
 
-void Chunk::drawTransparent() const {
+void Chunk::drawTransparent(Shader& shader) const {
+    shader.setVec3("u_chunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
     m_transparentMesh.draw();
 }
 
-void Chunk::drawEmissive() const {
+void Chunk::drawEmissive(Shader& shader) const {
+    shader.setVec3("u_chunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
     m_emissiveMesh.draw();
 }

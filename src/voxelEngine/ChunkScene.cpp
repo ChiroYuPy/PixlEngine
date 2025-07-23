@@ -8,7 +8,7 @@
 #include "voxelEngine/voxelWorld/chunk/Chunk.h"
 #include "utils/Logger.h"
 
-constexpr unsigned int RENDER_DISTANCE = 1;
+constexpr unsigned int RENDER_DISTANCE = 8;
 constexpr unsigned int RENDER_HEIGHT = 1;
 
 bool ChunkScene::initialize() {
@@ -43,7 +43,7 @@ void ChunkScene::setupWorld() {
     m_world = std::make_unique<World>();
     m_chunkRenderer = std::make_unique<ChunkRenderer>(*m_world, *m_camera, *m_shader);
 
-    m_world->generateArea({-RENDER_DISTANCE, -1, -RENDER_DISTANCE}, {RENDER_DISTANCE, RENDER_HEIGHT, RENDER_DISTANCE});
+    m_world->generateArea({-RENDER_DISTANCE+1, -RENDER_HEIGHT, -RENDER_DISTANCE+1}, {RENDER_DISTANCE, RENDER_HEIGHT, RENDER_DISTANCE});
     m_chunkRenderer->buildAll();
 }
 
@@ -66,10 +66,18 @@ void ChunkScene::setupInput() {
         }
 
         // Sélection du type de bloc avec les touches numériques
-        if (state == KeyState::Pressed && key >= GLFW_KEY_1 && key <= GLFW_KEY_9) {
-            int blockType = key - GLFW_KEY_0;
-            m_blockPlacer->setSelectedBlockType(blockType);
-            Logger::info(std::format("Selected block type: {}", blockType));
+        if (state == KeyState::Pressed) {
+            if (key == GLFW_KEY_Z) {
+                static int toggle = true;
+                Renderer* renderer = Application::getInstance().getRenderer();
+                renderer->setWireframeMode(toggle);
+                toggle = !toggle;
+            }
+            else if (key >= GLFW_KEY_1 && key <= GLFW_KEY_9) {
+                int blockType = key - GLFW_KEY_0;
+                m_blockPlacer->setSelectedBlockType(blockType);
+                Logger::info(std::format("Selected block type: {}", blockType));
+            }
         }
     });
 
