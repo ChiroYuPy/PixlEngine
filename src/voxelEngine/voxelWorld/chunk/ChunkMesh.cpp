@@ -21,9 +21,9 @@ void ChunkMesh::setupVertexAttribs() {
     vao.bind();
 
     instanceBuffer.bind();
-    glEnableVertexAttribArray(1);
-    glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(FaceInstance), (void*)nullptr);
-    glVertexAttribDivisor(1, 1);
+    glEnableVertexAttribArray(0);
+    glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(FaceInstance), (void*)nullptr);
+    glVertexAttribDivisor(0, 1);
 
     instanceBuffer.unbind();
     vao.unbind();
@@ -44,6 +44,6 @@ void ChunkMesh::draw() const {
     if (instanceCount == 0) return;
 
     vao.bind();
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, static_cast<GLsizei>(instanceCount));
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(instanceCount));
     vao.unbind();
 }

@@ -8,7 +8,7 @@
 #include "voxelEngine/voxelWorld/chunk/Chunk.h"
 #include "utils/Logger.h"
 
-constexpr unsigned int RENDER_DISTANCE = 8;
+constexpr unsigned int RENDER_DISTANCE = 4;
 constexpr unsigned int RENDER_HEIGHT = 1;
 
 bool ChunkScene::initialize() {
@@ -43,7 +43,7 @@ void ChunkScene::setupWorld() {
     m_world = std::make_unique<World>();
     m_chunkRenderer = std::make_unique<ChunkRenderer>(*m_world, *m_camera, *m_shader);
 
-    m_world->generateArea({-RENDER_DISTANCE+1, -RENDER_HEIGHT, -RENDER_DISTANCE+1}, {RENDER_DISTANCE, RENDER_HEIGHT, RENDER_DISTANCE});
+    m_world->generateArea({-RENDER_DISTANCE, -RENDER_HEIGHT, -RENDER_DISTANCE}, {RENDER_DISTANCE, RENDER_HEIGHT, RENDER_DISTANCE});
     m_chunkRenderer->buildAll();
 }
 
@@ -117,6 +117,16 @@ void ChunkScene::setupInput() {
 void ChunkScene::update(float deltaTime) {
     if (m_cameraController)
         m_cameraController->update(deltaTime);
+
+    m_fpsTimer += deltaTime;
+    m_frameCount++;
+
+    if (m_fpsTimer >= 1.0f) {
+        int fps = m_frameCount;
+        Logger::info(std::format("FPS: {}", fps));
+        m_fpsTimer = 0.0f;
+        m_frameCount = 0;
+    }
 
     // Optionnel: debug du bloc visé
     if (m_cameraController->isActive() && m_blockPlacer) {

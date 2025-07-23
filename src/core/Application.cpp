@@ -21,9 +21,9 @@ bool Application::initialize() {
     // Créer et initialiser la fenêtre
     m_window = std::make_unique<Window>();
     WindowConfig config;
-    config.title = "voxel Engine";
-    config.width = 1024;
-    config.height = 768;
+    config.title = "Pixl Engine";
+    config.width = 1280;
+    config.height = 720;
 
     if (!m_window->initialize(config)) {
         std::cerr << "Failed to initialize window" << std::endl;
@@ -51,6 +51,8 @@ bool Application::initialize() {
     m_window->setResizeCallback([this](int width, int height) {
         m_renderer->setViewport(0, 0, width, height);
     });
+
+    m_window->setVSync(false);
 
     m_running = true;
     m_lastTime = std::chrono::high_resolution_clock::now();

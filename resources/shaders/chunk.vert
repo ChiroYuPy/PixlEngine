@@ -1,10 +1,10 @@
 #version 430 core
 
-layout(location = 1) in uint iData;
+layout(location = 0) in uint iData;
 
 uniform mat4 u_View;
 uniform mat4 u_Projection;
-uniform vec3 u_chunkPos;
+uniform vec3 u_ChunkPos;
 uniform sampler1D u_ColorTex;
 
 out vec4 vColor;
@@ -12,22 +12,19 @@ flat out vec3 vNormal;
 
 // Normales associées aux faces
 const vec3 NORMALS[6] = vec3[](
-vec3( 0.0,  0.0,  1.0),  // +Z (faceID = 0)
-vec3( 0.0,  0.0, -1.0),  // -Z (faceID = 1)
-vec3( 1.0,  0.0,  0.0),  // +X (faceID = 2)
-vec3(-1.0,  0.0,  0.0),  // -X (faceID = 3)
-vec3( 0.0,  1.0,  0.0),  // +Y (faceID = 4)
-vec3( 0.0, -1.0,  0.0)   // -Y (faceID = 5)
+    vec3( 0.0,  0.0,  1.0), // +Z (faceID = 0)
+    vec3( 0.0,  0.0, -1.0), // -Z (faceID = 1)
+    vec3( 1.0,  0.0,  0.0), // +X (faceID = 2)
+    vec3(-1.0,  0.0,  0.0), // -X (faceID = 3)
+    vec3( 0.0,  1.0,  0.0), // +Y (faceID = 4)
+    vec3( 0.0, -1.0,  0.0)  // -Y (faceID = 5)
 );
 
-// Quad local pour une face (6 vertices pour 2 triangles)
-const vec2 QUAD[6] = vec2[](
-vec2(0.0, 0.0),  // Triangle 1
-vec2(1.0, 0.0),
-vec2(1.0, 1.0),
-vec2(0.0, 0.0),  // Triangle 2
-vec2(1.0, 1.0),
-vec2(0.0, 1.0)
+const vec2 QUAD[4] = vec2[](
+    vec2(0.0, 0.0),  // Bottom-left
+    vec2(1.0, 0.0),  // Bottom-right
+    vec2(0.0, 1.0),  // Top-left
+    vec2(1.0, 1.0)   // Top-right
 );
 
 // Applique une transformation selon la face
@@ -41,21 +38,21 @@ vec3 transformFace(vec2 localPos, uint faceID) {
 }
 
 void main() {
-    // DÉCODAGE CORRIGÉ - doit correspondre exactement à l'encodage
     uint x       = (iData >>  0u) & 31u;   // Bits 0-4
     uint y       = (iData >>  5u) & 31u;   // Bits 5-9
     uint z       = (iData >> 10u) & 31u;   // Bits 10-14
     uint faceID  = (iData >> 15u) & 7u;    // Bits 15-17
     uint voxelID = (iData >> 18u) & 255u;  // Bits 18-25
+    uint length  = (iData >> 26u) & 31u;   // Bits 26-30
 
-    // Conversion en coordonnées de voxel locales au chunk
     vec3 voxelPos = vec3(float(x), float(y), float(z));
+    vec3 chunkPos = u_ChunkPos;
 
     // Obtenir la position du vertex sur la face
     vec3 faceOffset = transformFace(QUAD[gl_VertexID], faceID);
 
     // Position mondiale = position chunk + position voxel local + offset de face
-    vec3 worldPos = u_chunkPos + voxelPos + faceOffset;
+    vec3 worldPos = chunkPos + voxelPos + faceOffset;
 
     gl_Position = u_Projection * u_View * vec4(worldPos, 1.0);
 

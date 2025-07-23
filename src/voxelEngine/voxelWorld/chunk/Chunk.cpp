@@ -92,7 +92,7 @@ void Chunk::buildMesh(const World& world) {
                     }
 
                     if (visible) {
-                        FaceInstance face = FaceInstance{glm::ivec3(x, y, z), faceID, voxelID};
+                        FaceInstance face = FaceInstance{glm::ivec3(x, y, z), faceID, voxelID, 1};
 
                         switch (type) {
                             case voxel::RenderMode::OPAQUE:
@@ -122,16 +122,16 @@ void Chunk::buildMesh(const World& world) {
 }
 
 void Chunk::drawOpaque(Shader& shader) const {
-    shader.setVec3("u_chunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
+    shader.setVec3("u_ChunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
     m_opaqueMesh.draw();
 }
 
 void Chunk::drawTransparent(Shader& shader) const {
-    shader.setVec3("u_chunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
+    shader.setVec3("u_ChunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
     m_transparentMesh.draw();
 }
 
 void Chunk::drawEmissive(Shader& shader) const {
-    shader.setVec3("u_chunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
+    shader.setVec3("u_ChunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
     m_emissiveMesh.draw();
 }

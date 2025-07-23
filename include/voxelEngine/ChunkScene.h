@@ -39,6 +39,9 @@ private:
 
     glm::ivec3 m_targetedBlockPos;
     bool m_hasTargetedBlock = false;
+
+    float m_fpsTimer = 0.0f;
+    int m_frameCount = 0;
 };
 
 #endif //PIXLENGINE_CHUNKSCENE_H
