@@ -20,7 +20,7 @@ public:
     GLuint getTextureID() const;
 
 private:
-    std::array<glm::vec3, MAX_COLORS> m_colors;
+    std::array<glm::vec4, MAX_COLORS> m_colors;
     GLuint m_textureID;
 };
 

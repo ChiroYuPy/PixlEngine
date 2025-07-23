@@ -23,11 +23,11 @@ void TextureColorPalette::updateFromRegistry() {
     for (size_t i = 0; i < MAX_COLORS; ++i) {
         const Color& c = voxel::getVoxelColor(static_cast<voxel::ID>(i));
 
-        m_colors[i] = glm::vec3(c.getRf(), c.getGf(), c.getBf());
+        m_colors[i] = glm::vec4(c.getRf(), c.getGf(), c.getBf(), c.getAf());
     }
 
     glBindTexture(GL_TEXTURE_1D, m_textureID);
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB32F, MAX_COLORS, 0, GL_RGB, GL_FLOAT, m_colors.data());
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, MAX_COLORS, 0, GL_RGBA, GL_FLOAT, m_colors.data());
 }
 
 GLuint TextureColorPalette::getTextureID() const {
