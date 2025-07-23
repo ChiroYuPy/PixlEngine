@@ -9,22 +9,34 @@
 #include <memory>
 #include "graphics/Shader.h"
 #include "graphics/Mesh.h"
+#include "graphics/objects/VertexArray.h"
+#include "graphics/objects/Buffer.h"
 
 class World;
 class Chunk;
 
+struct FaceInstance {
+    glm::ivec3 position;
+    glm::uint8_t faceID;
+    glm::uint8_t voxelID;
+};
+
 class ChunkMesh {
 public:
-    explicit ChunkMesh(const glm::ivec3& coord);
+    ChunkMesh();
+    ~ChunkMesh();
 
-    void build(const Chunk& chunk, const World& world);
-    void render(Shader& shader) const;
-
-    bool isValid() const;
+    void uploadInstances(const std::vector<FaceInstance>& instances);
+    void draw() const;
 
 private:
-    glm::ivec3 m_coord;
-    std::unique_ptr<Mesh<VertexPosColor>> m_mesh;
+    VertexArray vao;
+    Buffer vertexBuffer;
+    Buffer instanceBuffer;
+    size_t instanceCount = 0;
+
+    void setupBuffers();
+    void setupVertexAttribs();
 };
 
 #endif //PIXLENGINE_CHUNKMESH_H

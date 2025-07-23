@@ -4,9 +4,10 @@
 
 #include "voxelEngine/voxelWorld/world/ChunkRenderer.h"
 #include "voxelEngine/voxelWorld/world/World.h"
+#include "core/Application.h"
 
-ChunkRenderer::ChunkRenderer(World& world, Shader& shader)
-: m_world(world), m_shader(shader) {}
+ChunkRenderer::ChunkRenderer(World& world, Camera& camera, Shader& shader)
+: m_world(world), m_camera(camera), m_shader(shader) {}
 
 void ChunkRenderer::buildAll() {
     m_world.forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
@@ -15,10 +16,17 @@ void ChunkRenderer::buildAll() {
 }
 
 void ChunkRenderer::renderAll() {
+    auto* window = Application::getInstance().getWindow();
+    float aspectRatio = window->getAspectRatio();
+
+    glm::mat4 view = m_camera.getViewMatrix();
+    glm::mat4 proj = m_camera.getProjectionMatrix(aspectRatio);
+
+    m_shader.use();
+    m_shader.setMat4("u_View", view);
+    m_shader.setMat4("u_Projection", proj);
+
     m_world.forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
-        if (chunk) {
-            const ChunkMesh* mesh = chunk->getMesh();
-            if (mesh) mesh->render(m_shader);
-        }
+        if (chunk) chunk->draw(m_shader);
     });
 }

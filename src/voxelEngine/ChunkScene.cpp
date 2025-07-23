@@ -41,7 +41,7 @@ void ChunkScene::setupShader() {
 
 void ChunkScene::setupWorld() {
     m_world = std::make_unique<World>();
-    m_chunkRenderer = std::make_unique<ChunkRenderer>(*m_world, *m_shader);
+    m_chunkRenderer = std::make_unique<ChunkRenderer>(*m_world, *m_camera, *m_shader);
 
     m_world->generateArea({-RENDER_DISTANCE, -1, -RENDER_DISTANCE}, {RENDER_DISTANCE, RENDER_HEIGHT, RENDER_DISTANCE});
     m_chunkRenderer->buildAll();
@@ -136,26 +136,7 @@ void ChunkScene::render() {
         return;
     }
 
-    float aspectRatio = window->getAspectRatio();
-
-    glm::mat4 view = m_camera->getViewMatrix();
-    glm::mat4 proj = m_camera->getProjectionMatrix(aspectRatio);
-
-    m_shader->use();
-    m_shader->setMat4("u_View", view);
-    m_shader->setMat4("u_Projection", proj);
-
     m_chunkRenderer->renderAll();
-
-    if (m_hasTargetedBlock) {
-        renderBlockOutline(m_targetedBlockPos, view, proj);
-    }
-}
-
-void ChunkScene::renderBlockOutline(const glm::ivec3& blockPos,
-                                    const glm::mat4& view,
-                                    const glm::mat4& proj) {
-
 }
 
 void ChunkScene::shutdown() {

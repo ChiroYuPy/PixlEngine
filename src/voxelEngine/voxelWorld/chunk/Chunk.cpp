@@ -3,6 +3,7 @@
 //
 
 #include "voxelEngine/voxelWorld/chunk/Chunk.h"
+#include "voxelEngine/voxelWorld/world/World.h"
 
 Chunk::Chunk(ChunkCoord coord)
 : m_position(coord) {}
@@ -47,11 +48,61 @@ glm::ivec3 Chunk::getPosition() const {
 
 void Chunk::buildMesh(const World& world) {
     if (!m_dirty) return;
-    if (!m_mesh) m_mesh = std::make_unique<ChunkMesh>(glm::ivec3{m_position.x, m_position.y, m_position.z});
-    m_mesh->build(*this, world);
+
+    std::vector<FaceInstance> visibleFaces;
+
+    for (int x = 0; x < VoxelArray::SIZE; ++x) {
+        for (int y = 0; y < VoxelArray::SIZE; ++y) {
+            for (int z = 0; z < VoxelArray::SIZE; ++z) {
+                voxel::ID voxel = get(x, y, z);
+                if (voxel == voxel::AIR) continue;
+
+                for (int i = 0; i < 6; ++i) {
+                    CubicDirection dir = DirectionUtils::fromIndex(i);
+                    glm::ivec3 offset = DirectionUtils::getOffset(dir);
+                    int nx = x + offset.x, ny = y + offset.y, nz = z + offset.z;
+
+                    bool exposed = false;
+                    if (nx >= 0 && ny >= 0 && nz >= 0 &&
+                        nx < VoxelArray::SIZE && ny < VoxelArray::SIZE && nz < VoxelArray::SIZE) {
+                        exposed = get(nx, ny, nz) == voxel::AIR;
+                    } else {
+                        int wx = m_position.x * VoxelArray::SIZE + nx;
+                        int wy = m_position.y * VoxelArray::SIZE + ny;
+                        int wz = m_position.z * VoxelArray::SIZE + nz;
+                        exposed = world.getVoxel(wx, wy, wz) == voxel::AIR;
+                    }
+
+                    if (exposed) {
+                        // Position mondiale correcte du voxel
+                        glm::ivec3 worldPos = glm::ivec3(
+                                m_position.x * VoxelArray::SIZE + x,
+                                m_position.y * VoxelArray::SIZE + y,
+                                m_position.z * VoxelArray::SIZE + z
+                        );
+
+                        visibleFaces.push_back({
+                                                       worldPos,
+                                                       (uint8_t)i,
+                                                       (uint8_t)voxel
+                                               });
+                    }
+                }
+            }
+        }
+    }
+
+    m_mesh.uploadInstances(visibleFaces);
     m_dirty = false;
 }
 
-const ChunkMesh* Chunk::getMesh() const {
-    return m_mesh.get();
+const ChunkMesh& Chunk::getMesh() const {
+    return m_mesh;
+}
+
+void Chunk::draw(Shader& shader) const {
+    glm::ivec3 position = {m_position.x, m_position.y, m_position.z};
+    glm::mat4 model = glm::mat4(1.0f);
+    shader.setMat4("u_Model", model);
+    m_mesh.draw();
 }

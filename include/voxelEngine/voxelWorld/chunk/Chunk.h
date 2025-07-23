@@ -55,15 +55,18 @@ public:
     glm::ivec3 getPosition() const;
 
     void buildMesh(const World& world);
-    const ChunkMesh* getMesh() const;
+    const ChunkMesh& getMesh() const;
+
+    void draw(Shader& shader) const;
 
 private:
     ChunkCoord m_position;
     VoxelArray m_storage;
-    std::unique_ptr<ChunkMesh> m_mesh;
+    ChunkMesh m_mesh;
     bool m_dirty = true;
 
     static bool isInBounds(int x, int y, int z);
+
 };
 
 #endif //PIXLENGINE_CHUNK_H

@@ -30,10 +30,6 @@ private:
     void setupBlockPlacer();
     void setupInput();
 
-    void renderBlockOutline(const glm::ivec3& blockPos,
-                            const glm::mat4& view,
-                            const glm::mat4& proj);
-
     std::shared_ptr<Camera> m_camera;
     std::unique_ptr<CameraController> m_cameraController;
     std::unique_ptr<Shader> m_shader;
