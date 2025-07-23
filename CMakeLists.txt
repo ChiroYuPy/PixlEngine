@@ -55,6 +55,8 @@ set(SOURCES
         include/graphics/objects/Buffer.h
         src/graphics/objects/VertexArray.cpp
         include/graphics/objects/VertexArray.h
+        src/voxelEngine/voxelWorld/world/TextureColorPalette.cpp
+        include/voxelEngine/voxelWorld/world/TextureColorPalette.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)

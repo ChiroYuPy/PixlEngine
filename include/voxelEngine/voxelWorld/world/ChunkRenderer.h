@@ -6,6 +6,7 @@
 #define PIXLENGINE_CHUNKRENDERER_H
 
 #include "graphics/Camera.h"
+#include "voxelEngine/voxelWorld/world/TextureColorPalette.h"
 
 class World;
 class Shader;
@@ -20,6 +21,8 @@ private:
     World& m_world;
     Camera& m_camera;
     Shader& m_shader;
+
+    TextureColorPalette m_palette;
 };
 
 
