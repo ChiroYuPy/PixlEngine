@@ -25,3 +25,8 @@ int main() {
 
     return 0;
 }
+
+//TODO: Palette storage
+//TODO: Shadows
+//TODO: Tchat/Console
+//TODO: Schematics
