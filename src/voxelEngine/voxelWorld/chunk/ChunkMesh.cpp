@@ -54,7 +54,6 @@ void ChunkMesh::uploadInstances(const std::vector<FaceInstance>& instances) {
     instanceBuffer.bind();
     instanceBuffer.uploadData(instances.data(), instances.size() * sizeof(FaceInstance), GL_DYNAMIC_DRAW);
     instanceCount = instances.size();
-    Logger::warn(std::format("{}", instanceCount));
 }
 
 void ChunkMesh::setupBuffers() {
