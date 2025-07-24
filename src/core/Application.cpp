@@ -73,8 +73,12 @@ void Application::run() {
 
         m_window->pollEvents();
 
+        m_renderer->clear();
+
         update();
         render();
+
+        m_window->swapBuffers();
     }
 }
 

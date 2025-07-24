@@ -79,20 +79,23 @@ void Chunk::buildMesh(const World& world) {
                     }
 
                     bool visible = false;
+                    voxel::RenderMode neighborType = voxel::getRenderMode(neighborVoxelID);
 
-                    if (neighborVoxelID == voxel::AIR)
+                    if (neighborVoxelID == voxel::AIR) {
                         visible = true;
-                    else {
-                        // Face entre un voxelID opaque/émissif et un transparent
-                        voxel::RenderMode neighborType = voxel::getRenderMode(neighborVoxelID);
-                        if (type == voxel::RenderMode::OPAQUE &&
-                            neighborType == voxel::RenderMode::TRANSPARENT) {
+                    }
+                    else if (type == voxel::RenderMode::OPAQUE && neighborType == voxel::RenderMode::TRANSPARENT) {
+                        visible = true;
+                    }
+                    else if (type == voxel::RenderMode::TRANSPARENT) {
+                        if (neighborType == voxel::RenderMode::TRANSPARENT)
+                        if (voxelID != neighborVoxelID) {
                             visible = true;
                         }
                     }
 
                     if (visible) {
-                        const uint8_t length = 1;
+                        const uint8_t length = 0;
                         FaceInstance face = FaceInstance{glm::ivec3(x, y, z), faceID, voxelID, length};
 
                         switch (type) {

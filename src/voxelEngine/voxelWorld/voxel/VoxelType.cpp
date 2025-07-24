@@ -117,8 +117,8 @@ namespace voxel {
 
         registry[LAVA] = VoxelTypeDefinition{
                 "Lava",
-                Color::fromHex(0xCF4A0F),
-                RenderMode::OPAQUE,
+                Color::fromHex(0xCF4A0F80, true),
+                RenderMode::TRANSPARENT,
                 false
         };
 
