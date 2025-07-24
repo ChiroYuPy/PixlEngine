@@ -77,7 +77,7 @@ namespace voxel {
     // Fonctions utilitaires (inchangées mais utilisent maintenant le singleton)
     [[nodiscard]] bool isValidVoxelID(ID voxelID) noexcept;
     [[nodiscard]] const VoxelTypeDefinition& getVoxelTypeDefinition(ID voxelID) noexcept;
-    [[nodiscard]] const std::string& getVoxelDisplayName(ID voxelID) noexcept;
+    [[nodiscard]] const std::string& getDisplayName(ID voxelID) noexcept;
     [[nodiscard]] Color getVoxelColor(ID voxelID) noexcept;
     [[nodiscard]] RenderMode getRenderMode(ID voxelID) noexcept;
     [[nodiscard]] bool doesVoxelHaveCollision(ID voxelID) noexcept;

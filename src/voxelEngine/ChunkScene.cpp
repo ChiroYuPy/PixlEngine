@@ -53,7 +53,7 @@ void ChunkScene::setupWorld() {
 void ChunkScene::setupBlockPlacer() {
     m_blockPlacer = std::make_unique<WorldInteractor>(*m_world, *m_chunkRenderer);
     m_blockPlacer->setMaxReach(64.0f);
-    m_blockPlacer->setSelectedBlockType(1);
+    m_blockPlacer->setSelectedVoxelID(1);
 }
 
 void ChunkScene::setupInput() {
@@ -78,12 +78,15 @@ void ChunkScene::setupInput() {
                 renderer->setRenderPolygonMode(mode);
                 toggle = !toggle;
             }
-            else if (key >= GLFW_KEY_1 && key <= GLFW_KEY_9) {
-                int blockType = key - GLFW_KEY_0;
-                m_blockPlacer->setSelectedBlockType(blockType);
-                Logger::info(std::format("Selected block type: {}", blockType));
-            }
         }
+    });
+
+    input->setScrollCallback([this](double, double offset) {
+        static voxel::ID voxelID = 0;
+        voxelID += offset;
+
+        m_blockPlacer->setSelectedVoxelID(voxelID);
+        Logger::debug("block selected: " + voxel::getDisplayName(voxelID));
     });
 
     input->setMouseCallback([this](MouseButton button, KeyState state) {

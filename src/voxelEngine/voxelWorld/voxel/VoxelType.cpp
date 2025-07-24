@@ -153,7 +153,7 @@ namespace voxel {
         return VoxelTypeRegistry::getInstance().getDefinition(voxelID);
     }
 
-    const std::string &getVoxelDisplayName(ID voxelID) noexcept {
+    const std::string &getDisplayName(ID voxelID) noexcept {
         return getVoxelTypeDefinition(voxelID).displayName;
     }
 

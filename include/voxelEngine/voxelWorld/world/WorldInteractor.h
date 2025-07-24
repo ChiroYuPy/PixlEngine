@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "voxelEngine/voxelWorld/world/VoxelRaycaster.h"
+#include "voxelEngine/voxelWorld/voxel/VoxelType.h"
 
 class World;
 class ChunkRenderer;
@@ -16,7 +17,7 @@ class WorldInteractor {
 public:
     WorldInteractor(World& world, ChunkRenderer& chunkRenderer);
 
-    bool placeBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection, int blockType = 1);
+    bool placeBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection);
     bool breakBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection);
 
     bool placeBlockAt(const glm::ivec3& position, int blockType = 1);
@@ -25,7 +26,7 @@ public:
     void setMaxReach(float reach) { m_raycaster->setMaxDistance(reach); }
     float getMaxReach() const { return m_raycaster->getMaxDistance(); }
 
-    void setSelectedBlockType(int blockType) { m_selectedBlockType = blockType; }
+    void setSelectedVoxelID(voxel::ID blockType) { m_selectedBlockType = blockType; }
     int getSelectedBlockType() const { return m_selectedBlockType; }
 
     std::optional<RaycastHit> getTargetedBlock(const glm::vec3& cameraPos,
@@ -36,11 +37,7 @@ private:
     ChunkRenderer& m_chunkRenderer;
     std::unique_ptr<VoxelRaycaster> m_raycaster;
 
-    int m_selectedBlockType;
-
-    bool placeSphere(const glm::ivec3 &center, int radius, int blockType);
-
-    bool breakSphere(const glm::ivec3 &center, int radius);
+    voxel::ID m_selectedBlockType;
 };
 
 #endif //PIXLENGINE_WORLDINTERACTOR_H

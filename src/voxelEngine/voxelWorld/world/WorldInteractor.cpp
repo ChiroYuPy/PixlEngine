@@ -10,17 +10,17 @@
 #include "utils/Logger.h"
 
 WorldInteractor::WorldInteractor(World& world, ChunkRenderer& chunkRenderer)
-        : m_world(world), m_chunkRenderer(chunkRenderer), m_selectedBlockType(1) {
+        : m_world(world), m_chunkRenderer(chunkRenderer), m_selectedBlockType(voxel::DIRT) {
     m_raycaster = std::make_unique<VoxelRaycaster>(world);
 }
 
-bool WorldInteractor::placeBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection, int blockType) {
+bool WorldInteractor::placeBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection) {
     auto hit = m_raycaster->raycastFromCamera(cameraPos, cameraDirection);
     if (!hit) return false;
 
     glm::ivec3 placePos = hit->blockPos + hit->normalFace;
 
-    return placeBlockAt(placePos, blockType);
+    return placeBlockAt(placePos, m_selectedBlockType);
 }
 
 bool WorldInteractor::breakBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection) {
@@ -31,7 +31,7 @@ bool WorldInteractor::breakBlock(const glm::vec3& cameraPos, const glm::vec3& ca
 }
 
 bool WorldInteractor::placeBlockAt(const glm::ivec3& position, int blockType) {
-    if (m_world.getVoxel(position.x, position.y, position.z) != 0) {
+    if (m_world.getVoxel(position.x, position.y, position.z) != voxel::AIR) {
         Logger::warn("Cannot place block: position already occupied");
         return false;
     }
@@ -45,12 +45,12 @@ bool WorldInteractor::placeBlockAt(const glm::ivec3& position, int blockType) {
 }
 
 bool WorldInteractor::breakBlockAt(const glm::ivec3& position) {
-    if (m_world.getVoxel(position.x, position.y, position.z) == 0) {
+    if (m_world.getVoxel(position.x, position.y, position.z) == voxel::AIR) {
         Logger::warn("Cannot break block: no block at position");
         return false;
     }
 
-    m_world.setVoxel(position.x, position.y, position.z, 0);
+    m_world.setVoxel(position.x, position.y, position.z, voxel::AIR);
 
     m_chunkRenderer.buildAll();
 
