@@ -21,15 +21,15 @@ public:
     void shutdown();
 
     // Getters pour les sous-systèmes
-    Window* getWindow() const { return m_window.get(); }
-    Renderer* getRenderer() const { return m_renderer.get(); }
-    InputManager* getInputManager() const { return m_inputManager.get(); }
-    SceneManager* getSceneManager() const { return m_sceneManager.get(); }
+    Window* getWindow() const;
+    Renderer* getRenderer() const;
+    InputManager* getInputManager() const;
+    SceneManager* getSceneManager() const;
 
-    bool isRunning() const { return m_running; }
+    bool isRunning() const;
     void quit() { m_running = false; }
 
-    float getDeltaTime() const { return m_deltaTime; }
+    float getDeltaTime() const;
 
 private:
     Application() = default;
@@ -37,6 +37,10 @@ private:
 
     void update(float deltaTime);
     void render();
+
+    bool initServices();
+    bool initGLFW();
+    bool initDefaultHandlers();
 
     std::unique_ptr<Window> m_window;
     std::unique_ptr<Renderer> m_renderer;

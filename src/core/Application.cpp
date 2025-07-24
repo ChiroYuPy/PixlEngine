@@ -13,12 +13,25 @@ Application& Application::getInstance() {
 }
 
 bool Application::initialize() {
-    // ------------ [ GLFW ] ------------ #
+    if (!initGLFW()) return false;
+    if (!initServices()) return false;
+    if (!initDefaultHandlers()) return false;
+
+    m_running = true;
+    m_lastTime = std::chrono::high_resolution_clock::now();
+
+    return true;
+}
+
+bool Application::initGLFW() {
     if (!glfwInit()) {
         Logger::error("Failed to initialize GLFW");
         return false;
     }
+    return true;
+}
 
+bool Application::initServices() {
     // ------------ [ Window ] ------------ #
     m_window = std::make_unique<Window>(1280, 720, "Pixl Engine");
     if (!m_window->initialize()) {
@@ -43,17 +56,15 @@ bool Application::initialize() {
     // ------------ [ SceneManager ] ------------ #
     m_sceneManager = std::make_unique<SceneManager>();
 
-    // ------------ [ Default Event Handlers ] ------------ #
+    return true;
+}
+
+bool Application::initDefaultHandlers() {
     m_inputManager->setResizeCallback([this](int width, int height) {
         Logger::info(std::format("Window resized to {}x{}", width, height));
         m_window->resize(width, height);
         m_renderer->setViewport(0, 0, width, height);
     });
-
-    m_running = true;
-    m_lastTime = std::chrono::high_resolution_clock::now();
-
-    return true;
 }
 
 void Application::run() {
@@ -96,4 +107,28 @@ void Application::shutdown() {
 
     glfwTerminate();
     m_running = false;
+}
+
+Window *Application::getWindow() const {
+    return m_window.get();
+}
+
+Renderer *Application::getRenderer() const {
+    return m_renderer.get();
+}
+
+InputManager *Application::getInputManager() const {
+    return m_inputManager.get();
+}
+
+SceneManager *Application::getSceneManager() const {
+    return m_sceneManager.get();
+}
+
+bool Application::isRunning() const {
+    return m_running;
+}
+
+float Application::getDeltaTime() const {
+    return m_deltaTime;
 }
