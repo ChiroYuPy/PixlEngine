@@ -55,6 +55,8 @@ set(SOURCES
         src/voxelEngine/voxelWorld/world/TextureColorPalette.cpp
         src/core/Time.cpp
         include/core/Time.h
+        src/core/Engine.cpp
+        include/core/Engine.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)
