@@ -1,4 +1,4 @@
-#version 430 core
+#version 330 core
 
 layout(location = 0) in uint iData;
 
@@ -7,45 +7,81 @@ uniform vec3 u_ChunkPos;
 uniform sampler1D u_ColorTex;
 
 out vec4 vColor;
-flat out uint vFaceID; // Passer le faceID au fragment shader
+flat out uint vFaceID;
 
-// Table de lookup pour éviter les if/else chains
-const vec3 FACE_TRANSFORMS[24] = vec3[](
-    // +Z (faceID = 0)
-    vec3(0.0, 0.0, 1.0), vec3(1.0, 0.0, 1.0), vec3(0.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0),
-    // -Z (faceID = 1)
-    vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 0.0), vec3(0.0, 1.0, 0.0),
-    // +X (faceID = 2)
-    vec3(1.0, 0.0, 1.0), vec3(1.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 0.0),
-    // -X (faceID = 3)
-    vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0), vec3(0.0, 1.0, 0.0), vec3(0.0, 1.0, 1.0),
-    // +Y (faceID = 4)
-    vec3(0.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0), vec3(1.0, 1.0, 0.0),
-    // -Y (faceID = 5)
-    vec3(0.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0), vec3(1.0, 0.0, 1.0)
+const vec3 BASE_QUAD[4] = vec3[](
+vec3(0.0, 0.0, 1.0),
+vec3(1.0, 0.0, 1.0),
+vec3(0.0, 0.0, 0.0),
+vec3(1.0, 0.0, 0.0)
+);
+
+const mat4 FACE_MAT[6] = mat4[](
+// +Z (faceID = 0) - Avant
+mat4(
+vec4(1, 0, 0, 0),
+vec4(0, 0, 1, 0),
+vec4(0, -1, 0, 0),
+vec4(0, 0, 1, 1)
+),
+// -Z (faceID = 1) - Arrière
+mat4(
+vec4(1, 0, 0, 0),
+vec4(0, 0, -1, 0),
+vec4(0, 1, 0, 0),
+vec4(0, -1, 0, 1)
+),
+// +X (faceID = 2) - Droite
+mat4(
+vec4( 0, -1, 0, 0),
+vec4( 1,  0, 0, 0),
+vec4( 0,  0, 1, 0),
+vec4( 1,  0, 0, 1)
+),
+// -X (faceID = 3) - Gauche
+mat4(
+vec4(0, 1, 0, 0),
+vec4(-1,  0, 0, 0),
+vec4(0,  0, 1, 0),
+vec4(0,  -1, 0, 1)
+),
+// +Y (faceID = 4) - Haut
+mat4(
+vec4(1, 0, 0, 0),
+vec4(0, 1, 0, 0),
+vec4(0, 0, 1, 0),
+vec4(0, 0, 0, 1)
+),
+// -Y (faceID = 5) - Bas
+mat4(
+vec4(1, 0, 0, 0),
+vec4(0, -1, 0, 0),
+vec4(0, 0, -1, 0),
+vec4(0, -1, 1, 1)
+)
 );
 
 void main() {
-    // Extraction des données via bitshifts
     uint x       = (iData >>  0u) & 31u;
     uint y       = (iData >>  5u) & 31u;
     uint z       = (iData >> 10u) & 31u;
     uint faceID  = (iData >> 15u) & 7u;
     uint voxelID = (iData >> 18u) & 255u;
+    uint length  = (iData >> 26u) & 31u;
 
-    // Position du voxel
     vec3 voxelPos = vec3(float(x), float(y), float(z));
+    vec4 localPos = vec4(BASE_QUAD[gl_VertexID], 1.0);
 
-    // Lookup direct de la transformation de face
-    vec3 faceOffset = FACE_TRANSFORMS[faceID * 4u + uint(gl_VertexID)];
+    if (localPos.x == 1) localPos.x += 0;
 
-    // Position mondiale
-    vec3 worldPos = u_ChunkPos + voxelPos + faceOffset;
-    gl_Position = u_ViewProjection * vec4(worldPos, 1.0);
+    // Appliquer la matrice de rotation + translation de face
+    vec4 faceOffset = FACE_MAT[faceID] * localPos;
 
-    // Couleur via texture lookup
-    vColor = texture(u_ColorTex, float(voxelID) / 255.0);
+    // Ajouter position voxel + chunk
+    vec4 worldPos = vec4(u_ChunkPos + voxelPos, 0.0) + faceOffset;
 
-    // Passer le faceID au fragment shader
-    vFaceID = faceID;
+    gl_Position = u_ViewProjection * vec4(worldPos.xyz, 1.0);
+
+    vColor   = texture(u_ColorTex, float(voxelID) / 255.0);
+    vFaceID  = faceID;
 }

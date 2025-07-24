@@ -19,7 +19,11 @@ bool CameraController::isActive() const {
 void CameraController::update(float deltaTime) {
     if (!m_active) return;
 
-    float velocity = m_movementSpeed * deltaTime;
+    float speedMultiplier = 1.0f;
+    if (m_input->isKeyHeld(GLFW_KEY_LEFT_CONTROL))
+        speedMultiplier = 8.0f;
+
+    float velocity = m_movementSpeed * speedMultiplier * deltaTime;
 
     if (m_input->isKeyHeld(GLFW_KEY_W)) m_camera->move(CameraMovement::Forward, velocity);
     if (m_input->isKeyHeld(GLFW_KEY_S)) m_camera->move(CameraMovement::Backward, velocity);
