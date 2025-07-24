@@ -27,7 +27,7 @@ public:
     SceneManager* getSceneManager() const;
 
     bool isRunning() const;
-    void quit() { m_running = false; }
+    void quit();
 
     float getDeltaTime() const;
 

@@ -129,6 +129,10 @@ bool Application::isRunning() const {
     return m_running;
 }
 
+void Application::quit() {
+    m_running = false;
+}
+
 float Application::getDeltaTime() const {
     return m_deltaTime;
 }
