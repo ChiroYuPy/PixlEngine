@@ -9,6 +9,7 @@
 #include "voxelEngine/voxelWorld/generation/NaturalTerrainGenerator.h"
 #include <stdexcept>
 #include <format>
+#include <iostream>
 
 World::World() {
     m_generator = std::make_unique<NaturalTerrainGenerator>(0);

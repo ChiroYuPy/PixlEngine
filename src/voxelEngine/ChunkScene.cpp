@@ -12,6 +12,9 @@ constexpr unsigned int RENDER_DISTANCE = 4;
 constexpr unsigned int RENDER_HEIGHT = 1;
 
 bool ChunkScene::initialize() {
+    Renderer* renderer = Application::getInstance().getRenderer();
+    renderer->setClearColor(Color::fromHex(0x87CEEB));
+
     setupCamera();
     setupShader();
     setupWorld();
@@ -70,7 +73,9 @@ void ChunkScene::setupInput() {
             if (key == GLFW_KEY_Z) {
                 static int toggle = true;
                 Renderer* renderer = Application::getInstance().getRenderer();
-                renderer->setWireframeMode(toggle);
+
+                PolygonMode mode = toggle ? PolygonMode::Fill : PolygonMode::Wireframe;
+                renderer->setRenderPolygonMode(mode);
                 toggle = !toggle;
             }
             else if (key >= GLFW_KEY_1 && key <= GLFW_KEY_9) {

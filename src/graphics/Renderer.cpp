@@ -4,11 +4,14 @@
 
 #include "graphics/Renderer.h"
 #include "graphics/Shader.h"
-#include "graphics/Mesh.h"
-#include <iostream>
+#include "graphics/IMesh.h"
+#include "utils/Logger.h"
+
+Renderer::Renderer()
+: currentShader(nullptr) {}
 
 Renderer::~Renderer() {
-    shutdown();
+
 }
 
 bool Renderer::initialize() {
@@ -17,65 +20,71 @@ bool Renderer::initialize() {
         return false;
     }
 
-    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "Graphics Card: " << glGetString(GL_RENDERER) << std::endl;
-
-    enableDepthTest();
-    enableFaceCulling();
-
     glEnable(GL_MULTISAMPLE);
 
-    m_initialized = true;
     return true;
 }
 
-void Renderer::shutdown() {
-    m_initialized = false;
-}
-
 void Renderer::beginFrame() {
-    resetStats();
+
 }
 
 void Renderer::endFrame() {
-    // Rien pour l'instant
+
 }
 
-void Renderer::clear(const glm::vec3& color) {
-    glClearColor(color.r, color.g, color.b, 1.0f);
+void Renderer::setClearColor(const Color& color) {
+    glClearColor(color.getRf(), color.getGf(), color.getBf(), 1.0f);
+}
+
+void Renderer::clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::setViewport(int x, int y, int width, int height) {
+void Renderer::setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) {
     glViewport(x, y, width, height);
 }
 
-void Renderer::enableDepthTest(bool enable) {
-    if (enable) {
-        glEnable(GL_DEPTH_TEST);
-    } else {
-        glDisable(GL_DEPTH_TEST);
-    }
+void Renderer::setViewProjection(const glm::mat4& view, const glm::mat4& projection) {
+    viewMatrix = view;
+    projectionMatrix = projection;
 }
 
-void Renderer::enableFaceCulling(bool enable) {
-    if (enable) {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-    } else {
-        glDisable(GL_CULL_FACE);
-    }
+void Renderer::setShader(std::shared_ptr<Shader> shader) {
+    currentShader = shader;
+    if (currentShader) currentShader->use();
 }
 
-void Renderer::enableBlending(bool enable) {
-    if (enable) {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    } else {
-        glDisable(GL_BLEND);
+void Renderer::drawMesh(const IMesh& mesh, const glm::mat4& modelMatrix) {
+    if (!currentShader) {
+        Logger::warn("[Renderer] No shader set before drawMesh()");
+        return;
     }
+
+    currentShader->setMat4("u_Model", modelMatrix); // not yet used
+    currentShader->setMat4("u_ViewProjection", viewMatrix * projectionMatrix);
+
+    currentShader->use();
+    mesh.bind();
+    mesh.draw();
+    mesh.unbind();
+    currentShader->unuse();
 }
 
-void Renderer::setWireframeMode(bool enabled) {
-    glPolygonMode(GL_FRONT_AND_BACK, enabled ? GL_LINE : GL_FILL);
+void Renderer::setRenderPolygonMode(PolygonMode mode, PolygonFace face) {
+    GLenum glMode;
+    switch (mode) {
+        case PolygonMode::Fill: glMode = GL_FILL; break;
+        case PolygonMode::Wireframe: glMode = GL_LINE; break;
+        case PolygonMode::Point: glMode = GL_POINT; break;
+    }
+
+    GLenum glFace;
+    switch (face) {
+        case PolygonFace::Front:        glFace = GL_FRONT; break;
+        case PolygonFace::Back:         glFace = GL_BACK; break;
+        case PolygonFace::FrontAndBack: glFace = GL_FRONT_AND_BACK; break;
+    }
+
+    glPolygonMode(glFace, glMode);
 }

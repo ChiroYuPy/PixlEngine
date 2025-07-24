@@ -60,7 +60,7 @@ void InputManager::shutdown() {
     m_window = nullptr;
     m_initialized = false;
 
-    Logger::info("InputManager shutdown complete");
+    Logger::info("InputManager destroyGLFWwindow complete");
 }
 
 void InputManager::update() {

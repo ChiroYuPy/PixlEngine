@@ -10,7 +10,6 @@
 #include "core/Application.h"
 #include "CameraController.h"
 #include "scene/SceneManager.h"
-#include "utils/MeshGenerator.h"
 #include "voxelEngine/voxelWorld/world/World.h"
 #include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
 #include "voxelEngine/voxelWorld/world/WorldInteractor.h"

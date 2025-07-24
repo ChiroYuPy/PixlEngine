@@ -5,52 +5,50 @@
 #ifndef PIXLENGINE_RENDERER_H
 #define PIXLENGINE_RENDERER_H
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <GLT.h>
 #include <iostream>
-#include "Mesh.h"
+#include <memory>
+#include "IMesh.h"
 #include "Shader.h"
+#include "core/Color.h"
 
-struct RenderStats {
-    int drawCalls = 0;
-    int vertices = 0;
-    int triangles = 0;
+enum class PolygonMode {
+    Fill,
+    Wireframe,
+    Point
+};
+
+enum class PolygonFace {
+    Front,
+    Back,
+    FrontAndBack
 };
 
 class Renderer {
 public:
-    Renderer() = default;
+    Renderer();
     ~Renderer();
 
-    // Non-copyable but movable
-    Renderer(const Renderer&) = delete;
-    Renderer& operator=(const Renderer&) = delete;
-    Renderer(Renderer&&) = default;
-    Renderer& operator=(Renderer&&) = default;
-
     bool initialize();
-    void shutdown();
 
     void beginFrame();
     void endFrame();
 
-    void clear(const glm::vec3& color = glm::vec3(0.2f, 0.3f, 0.3f));
-    void setViewport(int x, int y, int width, int height);
+    void setClearColor(const Color& color);
+    void clear();
+    void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
 
-    // Configuration
-    void enableDepthTest(bool enable = true);
-    void enableFaceCulling(bool enable = true);
-    void enableBlending(bool enable = true);
-    void setWireframeMode(bool enabled);
+    void setViewProjection(const glm::mat4& view, const glm::mat4& projection);
+    void setShader(std::shared_ptr<Shader> shader);
 
-    const RenderStats& getStats() const { return m_stats; }
-    void resetStats() { m_stats = {}; }
+    void drawMesh(const IMesh& mesh, const glm::mat4& modelMatrix);
 
-    bool isInitialized() const { return m_initialized; }
+    void setRenderPolygonMode(PolygonMode mode, PolygonFace face = PolygonFace::FrontAndBack);
 
 private:
-    RenderStats m_stats;
-    bool m_initialized = false;
+    glm::mat4 viewMatrix;
+    glm::mat4 projectionMatrix;
+    std::shared_ptr<Shader> currentShader;
 };
 
 #include "Renderer.inl"

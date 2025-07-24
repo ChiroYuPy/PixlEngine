@@ -5,10 +5,11 @@
 #ifndef PIXLENGINE_CHUNKMESH_H
 #define PIXLENGINE_CHUNKMESH_H
 
-#include "GLT.h"
+#include <GLT.h>
 #include <memory>
+#include <vector>
 #include "graphics/Shader.h"
-#include "graphics/Mesh.h"
+#include "graphics/IMesh.h"
 #include "graphics/objects/VertexArray.h"
 #include "graphics/objects/Buffer.h"
 

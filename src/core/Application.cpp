@@ -13,47 +13,42 @@ Application& Application::getInstance() {
 }
 
 bool Application::initialize() {
-    // Initialiser GLFW
+    // ------------ [ GLFW ] ------------ #
     if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
+        Logger::error("Failed to initialize GLFW");
         return false;
     }
 
-    // Créer et initialiser la fenêtre
-    m_window = std::make_unique<Window>();
-    WindowConfig config;
-    config.title = "Pixl Engine";
-    config.width = 1280;
-    config.height = 720;
-
-    if (!m_window->initialize(config)) {
-        std::cerr << "Failed to initialize window" << std::endl;
+    // ------------ [ Window ] ------------ #
+    m_window = std::make_unique<Window>(1280, 720, "Pixl Engine");
+    if (!m_window->initialize()) {
+        Logger::error("Failed to initialize window");
         return false;
     }
 
-    // Créer et initialiser le renderer
+    // ------------ [ Renderer ] ------------ #
     m_renderer = std::make_unique<Renderer>();
     if (!m_renderer->initialize()) {
-        std::cerr << "Failed to initialize renderer" << std::endl;
+        Logger::error("Failed to initialize renderer");
         return false;
     }
 
-    // Créer et initialiser l'input manager
+    // ------------ [ InputManager ] ------------ #
     m_inputManager = std::make_unique<InputManager>();
     if (!m_inputManager->initialize(m_window->getGLFWWindow())) {
-        std::cerr << "Failed to initialize input manager" << std::endl;
+        Logger::error("Failed to initialize input manager");
         return false;
     }
 
-    // Créer le scene manager
+    // ------------ [ SceneManager ] ------------ #
     m_sceneManager = std::make_unique<SceneManager>();
 
+    // ------------ [ Default Event Handlers ] ------------ #
     m_inputManager->setResizeCallback([this](int width, int height) {
         Logger::info(std::format("Window resized to {}x{}", width, height));
         m_window->resize(width, height);
+        m_renderer->setViewport(0, 0, width, height);
     });
-
-    m_window->setVSync(false);
 
     m_running = true;
     m_lastTime = std::chrono::high_resolution_clock::now();
@@ -85,29 +80,19 @@ void Application::update(float deltaTime) {
 
 void Application::render() {
     m_renderer->beginFrame();
+
     m_renderer->clear();
 
-    if (m_sceneManager)
-        m_sceneManager->render();
+    if (m_sceneManager) m_sceneManager->render();
 
     m_renderer->endFrame();
 }
 
 void Application::shutdown() {
-    if (m_sceneManager) {
-        m_sceneManager.reset();
-    }
-    if (m_inputManager) {
-        m_inputManager.reset();
-    }
-    if (m_renderer) {
-        m_renderer->shutdown();
-        m_renderer.reset();
-    }
-    if (m_window) {
-        m_window->shutdown();
-        m_window.reset();
-    }
+    if (m_sceneManager) m_sceneManager.reset();
+    if (m_inputManager) m_inputManager.reset();
+    if (m_renderer) m_renderer.reset();
+    if (m_window) m_window.reset();
 
     glfwTerminate();
     m_running = false;

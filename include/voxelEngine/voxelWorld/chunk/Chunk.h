@@ -9,7 +9,7 @@
 #include <GLT.h>
 #include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
 #include "voxelEngine/voxelWorld/utils/DirectionUtils.h"
-#include "graphics/Mesh.h"
+#include "graphics/IMesh.h"
 #include "ChunkMesh.h"
 
 struct ChunkCoord {

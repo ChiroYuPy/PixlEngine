@@ -34,7 +34,6 @@ set(SOURCES
         src/graphics/Renderer.cpp
         src/input/InputManager.cpp
         src/graphics/Camera.cpp
-        src/utils/MeshGenerator.cpp
         src/voxelEngine/ChunkScene.cpp
         src/voxelEngine/voxelWorld/world/World.cpp
         src/voxelEngine/voxelWorld/chunk/Chunk.cpp
@@ -57,6 +56,7 @@ set(SOURCES
         include/graphics/objects/VertexArray.h
         src/voxelEngine/voxelWorld/world/TextureColorPalette.cpp
         include/voxelEngine/voxelWorld/world/TextureColorPalette.h
+        include/graphics/IMesh.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)
