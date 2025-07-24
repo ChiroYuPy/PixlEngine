@@ -5,7 +5,7 @@
 #include <iostream>
 #include <format>
 #include "voxelEngine/voxelWorld/generation/FlatTerrainGenerator.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 
 voxel::ID FlatTerrainGenerator::generateVoxel(const glm::ivec3 &worldPos) {
     if (worldPos.y < HEIGHT - 1) return voxel::DIRT;

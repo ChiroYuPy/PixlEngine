@@ -3,7 +3,7 @@
 //
 
 #include "graphics/Window.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 
 Window::Window(unsigned int width, unsigned int height, const std::string& title)
 : m_width(width), m_height(height), m_title(title) {}

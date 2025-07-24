@@ -7,7 +7,7 @@
 #include "voxelEngine/voxelWorld/world/WorldInteractor.h"
 #include "voxelEngine/voxelWorld/world/World.h"
 #include "voxelEngine/voxelWorld/world/ChunkRenderer.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 
 WorldInteractor::WorldInteractor(World& world, ChunkRenderer& chunkRenderer)
         : m_world(world), m_chunkRenderer(chunkRenderer), m_selectedBlockType(voxel::DIRT) {

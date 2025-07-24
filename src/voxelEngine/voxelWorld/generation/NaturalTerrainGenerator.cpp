@@ -4,7 +4,7 @@
 
 #include <format>
 #include "voxelEngine/voxelWorld/generation/NaturalTerrainGenerator.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 
 // Constantes pour la génération
 const double CONTINENT_SCALE = 0.001;

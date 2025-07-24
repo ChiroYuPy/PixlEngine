@@ -25,7 +25,7 @@ set(SOURCES
         ${EXTERNAL_SOURCE_DIR}/OS2.cpp
         ${EXTERNAL_SOURCE_DIR}/IMG.cpp
 
-        src/utils/Logger.cpp
+        src/core/Logger.cpp
         src/core/Application.cpp
         src/graphics/Window.cpp
         src/platform/Platform.cpp

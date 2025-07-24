@@ -5,7 +5,7 @@
 #include "graphics/Renderer.h"
 #include "graphics/Shader.h"
 #include "graphics/IMesh.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 
 Renderer::Renderer()
 : currentShader(nullptr) {}

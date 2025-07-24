@@ -6,7 +6,7 @@
 #include <iostream>
 #include "voxelEngine/ChunkScene.h"
 #include "voxelEngine/voxelWorld/chunk/Chunk.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 
 constexpr unsigned int RENDER_DISTANCE = 4;
 constexpr unsigned int RENDER_HEIGHT = 1;

@@ -5,7 +5,7 @@
 #include <format>
 #include "voxelEngine/voxelWorld/chunk/ChunkMesh.h"
 #include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 
 ChunkMesh::ChunkMesh()
 : instanceBuffer(BufferType::Instance) {

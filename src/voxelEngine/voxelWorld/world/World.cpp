@@ -5,7 +5,7 @@
 #include "voxelEngine/voxelWorld/world/World.h"
 #include "voxelEngine/voxelWorld/chunk/Chunk.h"
 #include "voxelEngine/voxelWorld/generation/FlatTerrainGenerator.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 #include "voxelEngine/voxelWorld/generation/NaturalTerrainGenerator.h"
 #include <stdexcept>
 #include <format>

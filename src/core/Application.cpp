@@ -4,7 +4,7 @@
 
 #include "core/Application.h"
 #include "graphics/Window.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 #include <iostream>
 
 Application& Application::getInstance() {

@@ -3,7 +3,7 @@
 //
 
 #include "input/InputManager.h"
-#include "utils/Logger.h"
+#include "core/Logger.h"
 #include <format>
 
 InputManager::~InputManager() {
