@@ -34,8 +34,6 @@ private:
 
     void renderOpaquePass();
 
-    void renderEmissivePass();
-
     void renderTransparentPass();
 };
 

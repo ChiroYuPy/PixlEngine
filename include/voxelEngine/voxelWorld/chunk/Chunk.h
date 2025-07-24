@@ -58,7 +58,6 @@ public:
 
     void drawOpaque(Shader& shader) const;
     void drawTransparent(Shader& shader) const;
-    void drawEmissive(Shader& shader) const;
 
 private:
     ChunkCoord m_position;
@@ -66,7 +65,6 @@ private:
 
     ChunkMesh m_opaqueMesh;
     ChunkMesh m_transparentMesh;
-    ChunkMesh m_emissiveMesh;
 
     bool m_dirty = true;
 

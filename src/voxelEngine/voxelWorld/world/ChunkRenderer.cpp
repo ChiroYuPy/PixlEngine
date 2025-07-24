@@ -33,9 +33,8 @@ void ChunkRenderer::renderAll() {
     // Bind des ressources communes
     bindCommonResources();
 
-    // Rendu en 3 passes optimisées
+    // Rendu en 2 passes optimisées
     renderOpaquePass();
-    renderEmissivePass();
     renderTransparentPass();
 }
 
@@ -52,14 +51,12 @@ void ChunkRenderer::bindCommonResources() {
     m_shader.use();
     m_shader.setMat4("u_ViewProjection", m_viewProjection);
 
-    // Bind texture une seule fois
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_1D, m_textureColorpalette.getTextureID());
     m_shader.setInt("u_ColorTex", 0);
 }
 
 void ChunkRenderer::renderOpaquePass() {
-    // État optimal pour les objets opaques
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
 
@@ -70,18 +67,7 @@ void ChunkRenderer::renderOpaquePass() {
     });
 }
 
-void ChunkRenderer::renderEmissivePass() {
-    // Les objets émissifs utilisent le même état que les opaques
-    // mais pourraient avoir des shaders différents dans le futur
-    m_world.forEachChunk([&](const ChunkCoord& coord, Chunk* chunk) {
-        if (chunk) {
-            chunk->drawEmissive(m_shader);
-        }
-    });
-}
-
 void ChunkRenderer::renderTransparentPass() {
-    // Configuration pour la transparence
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
@@ -103,9 +89,8 @@ void ChunkRenderer::renderTransparentPass() {
               [](const auto& a, const auto& b) { return a.first > b.first; });
 
     // Rendu des chunks triés
-    for (const auto& [distance, chunk] : sortedChunks) {
+    for (const auto& [distance, chunk] : sortedChunks)
         chunk->drawTransparent(m_shader);
-    }
 
     // Restauration des états
     glDepthMask(GL_TRUE);

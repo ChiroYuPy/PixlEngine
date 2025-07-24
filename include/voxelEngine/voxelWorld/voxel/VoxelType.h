@@ -18,21 +18,18 @@ namespace voxel {
         INVISIBLE,   // Air - not rendered at all
         OPAQUE,      // Standard opaque block
         TRANSPARENT, // Glass-like blocks with transparency
-        EMISSIVE     // Self-illuminating blocks
     };
 
     struct VoxelTypeDefinition {
         std::string displayName;
         Color color;
         RenderMode renderMode;
-        float lightEmissionLevel;
         bool hasCollision;
 
         VoxelTypeDefinition(
                 std::string_view displayName = "Unknown Block",
                 const Color& color = Color(255, 0, 255, 255),
                 RenderMode renderingMode = RenderMode::OPAQUE,
-                float lightEmissionLevel = 0.0f,
                 bool hasCollision = true);
     };
 
@@ -83,11 +80,9 @@ namespace voxel {
     [[nodiscard]] const std::string& getVoxelDisplayName(ID voxelID) noexcept;
     [[nodiscard]] Color getVoxelColor(ID voxelID) noexcept;
     [[nodiscard]] RenderMode getRenderMode(ID voxelID) noexcept;
-    [[nodiscard]] float getVoxelLightEmissionLevel(ID voxelID) noexcept;
     [[nodiscard]] bool doesVoxelHaveCollision(ID voxelID) noexcept;
     [[nodiscard]] bool isVoxelTransparent(ID voxelID) noexcept;
     [[nodiscard]] bool isVoxelOpaque(ID voxelID) noexcept;
-    [[nodiscard]] bool isVoxelLightEmitting(ID voxelID) noexcept;
     [[nodiscard]] bool isVoxelAir(ID voxelID) noexcept;
     [[nodiscard]] bool isVoxelLiquid(ID voxelID) noexcept;
     [[nodiscard]] bool isVoxelSolid(ID voxelID) noexcept;

@@ -51,12 +51,12 @@ void Chunk::buildMesh(const World& world) {
 
     std::vector<FaceInstance> opaqueFaces;
     std::vector<FaceInstance> transparentFaces;
-    std::vector<FaceInstance> emissiveFaces;
 
     for (int x = 0; x < VoxelArray::SIZE; ++x) {
         for (int y = 0; y < VoxelArray::SIZE; ++y) {
             for (int z = 0; z < VoxelArray::SIZE; ++z) {
                 voxel::ID voxelID = get(x, y, z);
+
                 if (voxelID == voxel::AIR) continue;
 
                 voxel::RenderMode type = voxel::getRenderMode(voxelID);
@@ -85,14 +85,15 @@ void Chunk::buildMesh(const World& world) {
                     else {
                         // Face entre un voxelID opaque/émissif et un transparent
                         voxel::RenderMode neighborType = voxel::getRenderMode(neighborVoxelID);
-                        if ((type == voxel::RenderMode::OPAQUE || type == voxel::RenderMode::EMISSIVE) &&
+                        if (type == voxel::RenderMode::OPAQUE &&
                             neighborType == voxel::RenderMode::TRANSPARENT) {
                             visible = true;
                         }
                     }
 
                     if (visible) {
-                        FaceInstance face = FaceInstance{glm::ivec3(x, y, z), faceID, voxelID, 1};
+                        const uint8_t length = 1;
+                        FaceInstance face = FaceInstance{glm::ivec3(x, y, z), faceID, voxelID, length};
 
                         switch (type) {
                             case voxel::RenderMode::OPAQUE:
@@ -100,9 +101,6 @@ void Chunk::buildMesh(const World& world) {
                                 break;
                             case voxel::RenderMode::TRANSPARENT:
                                 transparentFaces.push_back(face);
-                                break;
-                            case voxel::RenderMode::EMISSIVE:
-                                emissiveFaces.push_back(face);
                                 break;
                             default:
                                 opaqueFaces.push_back(face); // fallback
@@ -116,7 +114,6 @@ void Chunk::buildMesh(const World& world) {
 
     m_opaqueMesh.uploadInstances(opaqueFaces);
     m_transparentMesh.uploadInstances(transparentFaces);
-    m_emissiveMesh.uploadInstances(emissiveFaces);
 
     m_dirty = false;
 }
@@ -129,9 +126,4 @@ void Chunk::drawOpaque(Shader& shader) const {
 void Chunk::drawTransparent(Shader& shader) const {
     shader.setVec3("u_ChunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
     m_transparentMesh.draw();
-}
-
-void Chunk::drawEmissive(Shader& shader) const {
-    shader.setVec3("u_ChunkPos", glm::vec3(getPosition()*VoxelArray::SIZE));
-    m_emissiveMesh.draw();
 }

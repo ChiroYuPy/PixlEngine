@@ -2,27 +2,12 @@
 
 layout(location = 0) in uint iData;
 
-uniform mat4 u_ViewProjection; // Pré-calculé côté CPU
+uniform mat4 u_ViewProjection;
 uniform vec3 u_ChunkPos;
 uniform sampler1D u_ColorTex;
 
 out vec4 vColor;
 flat out uint vFaceID; // Passer le faceID au fragment shader
-
-// Utilisation de constantes pour les normales et quad vertices
-const vec3 FACE_NORMALS[6] = vec3[](
-    vec3( 0.0,  0.0,  1.0), // +Z
-    vec3( 0.0,  0.0, -1.0), // -Z
-    vec3( 1.0,  0.0,  0.0), // +X
-    vec3(-1.0,  0.0,  0.0), // -X
-    vec3( 0.0,  1.0,  0.0), // +Y
-    vec3( 0.0, -1.0,  0.0)  // -Y
-);
-
-const vec2 QUAD_VERTICES[4] = vec2[](
-    vec2(0.0, 0.0), vec2(1.0, 0.0),
-    vec2(0.0, 1.0), vec2(1.0, 1.0)
-);
 
 // Table de lookup pour éviter les if/else chains
 const vec3 FACE_TRANSFORMS[24] = vec3[](
