@@ -53,6 +53,8 @@ set(SOURCES
         src/graphics/objects/Buffer.cpp
         src/graphics/objects/VertexArray.cpp
         src/voxelEngine/voxelWorld/world/TextureColorPalette.cpp
+        src/core/Time.cpp
+        include/core/Time.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)

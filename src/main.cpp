@@ -6,7 +6,7 @@
 int main() {
     Logger::setLevel(LogLevel::Debug);
     Platform::enableAnsiColors();
-    Application& app = Application::getInstance();
+    Application& app = Application::get();
 
     if (!app.initialize()) {
         Logger::error("Failed to initialize application");

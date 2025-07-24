@@ -39,7 +39,7 @@ void ChunkRenderer::renderAll() {
 }
 
 void ChunkRenderer::setupMatrices() {
-    auto* window = Application::getInstance().getWindow();
+    auto* window = Application::get().getWindow();
     float aspectRatio = window->getAspectRatio();
 
     glm::mat4 view = m_camera.getViewMatrix();

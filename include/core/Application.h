@@ -11,10 +11,11 @@
 #include "graphics/Renderer.h"
 #include "input/InputManager.h"
 #include "scene/SceneManager.h"
+#include "Time.h"
 
 class Application {
 public:
-    static Application& getInstance();
+    static Application& get();
 
     bool initialize();
     void run();
@@ -27,20 +28,21 @@ public:
     SceneManager* getSceneManager() const;
 
     bool isRunning() const;
-    void quit();
+    void setShouldQuit();
 
+    float getElapsedTime() const;
     float getDeltaTime() const;
 
 private:
     Application() = default;
     ~Application() = default;
 
-    void update(float deltaTime);
+    void update();
     void render();
 
     bool initServices();
     bool initGLFW();
-    bool initDefaultHandlers();
+    void initDefaultHandlers();
 
     std::unique_ptr<Window> m_window;
     std::unique_ptr<Renderer> m_renderer;
@@ -48,8 +50,9 @@ private:
     std::unique_ptr<SceneManager> m_sceneManager;
 
     bool m_running = false;
-    float m_deltaTime = 0.0f;
-    std::chrono::high_resolution_clock::time_point m_lastTime;
+    Time m_time;
+
+    void quitGLFW();
 };
 
 

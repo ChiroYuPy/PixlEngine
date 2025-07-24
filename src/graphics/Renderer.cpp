@@ -26,11 +26,11 @@ bool Renderer::initialize() {
 }
 
 void Renderer::beginFrame() {
-
+    //TODO: render stats recording
 }
 
 void Renderer::endFrame() {
-
+    //TODO: render stats calculating and logging
 }
 
 void Renderer::setClearColor(const Color& color) {

@@ -12,7 +12,7 @@ constexpr unsigned int RENDER_DISTANCE = 4;
 constexpr unsigned int RENDER_HEIGHT = 1;
 
 bool ChunkScene::initialize() {
-    Renderer* renderer = Application::getInstance().getRenderer();
+    Renderer* renderer = Application::get().getRenderer();
     renderer->setClearColor(Color::fromHex(0x87CEEB));
 
     setupCamera();
@@ -30,7 +30,7 @@ void ChunkScene::setupCamera() {
     m_camera->setFOV(70.f);
     m_camera->setOrientation(45.f, 0.f);
 
-    auto* input = Application::getInstance().getInputManager();
+    auto* input = Application::get().getInputManager();
     m_cameraController = std::make_unique<CameraController>(input, m_camera);
 }
 
@@ -57,14 +57,14 @@ void ChunkScene::setupBlockPlacer() {
 }
 
 void ChunkScene::setupInput() {
-    auto* input = Application::getInstance().getInputManager();
+    auto* input = Application::get().getInputManager();
 
     input->setKeyCallback([this](int key, KeyState state) {
         if (key == GLFW_KEY_ESCAPE && state == KeyState::Pressed) {
             if (m_cameraController->isActive()) {
                 m_cameraController->setActive(false);
             } else {
-                Application::getInstance().quit();
+                Application::get().setShouldQuit();
             }
         }
 
@@ -72,7 +72,7 @@ void ChunkScene::setupInput() {
         if (state == KeyState::Pressed) {
             if (key == GLFW_KEY_Z) {
                 static int toggle = true;
-                Renderer* renderer = Application::getInstance().getRenderer();
+                Renderer* renderer = Application::get().getRenderer();
 
                 PolygonMode mode = toggle ? PolygonMode::Fill : PolygonMode::Wireframe;
                 renderer->setRenderPolygonMode(mode);
@@ -154,8 +154,8 @@ void ChunkScene::update(float deltaTime) {
 }
 
 void ChunkScene::render() {
-    auto* renderer = Application::getInstance().getRenderer();
-    auto* window = Application::getInstance().getWindow();
+    auto* renderer = Application::get().getRenderer();
+    auto* window = Application::get().getWindow();
 
     if (!renderer || !window || !m_camera || !m_shader) {
         Logger::warn("render aborted, missing some components");

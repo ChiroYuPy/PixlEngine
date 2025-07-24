@@ -7,7 +7,7 @@
 #include "core/Logger.h"
 #include <iostream>
 
-Application& Application::getInstance() {
+Application& Application::get() {
     static Application instance;
     return instance;
 }
@@ -15,10 +15,10 @@ Application& Application::getInstance() {
 bool Application::initialize() {
     if (!initGLFW()) return false;
     if (!initServices()) return false;
-    if (!initDefaultHandlers()) return false;
+    initDefaultHandlers();
 
+    m_time.start();
     m_running = true;
-    m_lastTime = std::chrono::high_resolution_clock::now();
 
     return true;
 }
@@ -59,43 +59,43 @@ bool Application::initServices() {
     return true;
 }
 
-bool Application::initDefaultHandlers() {
+void Application::initDefaultHandlers() {
     m_inputManager->setResizeCallback([this](int width, int height) {
         Logger::info(std::format("Window resized to {}x{}", width, height));
         m_window->resize(width, height);
         m_renderer->setViewport(0, 0, width, height);
     });
-    return true;
 }
 
 void Application::run() {
     while (m_running && !m_window->shouldClose()) {
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        m_deltaTime = std::chrono::duration<float>(currentTime - m_lastTime).count();
-        m_lastTime = currentTime;
+        m_time.update();
 
         m_window->pollEvents();
-        m_inputManager->update();
 
-        update(m_deltaTime);
+        update();
         render();
-
-        m_window->swapBuffers();
     }
 }
 
-void Application::update(float deltaTime) {
+void Application::update() {
+    float deltaTime = getDeltaTime();
+
+    // services update
+    if (m_inputManager)
+        m_inputManager->update();
+
     if (m_sceneManager)
         m_sceneManager->update(deltaTime);
 }
 
-
 void Application::render() {
+    if (!m_renderer) return;
+
     m_renderer->beginFrame();
 
-    m_renderer->clear();
-
-    if (m_sceneManager) m_sceneManager->render();
+    if (m_sceneManager)
+        m_sceneManager->render();
 
     m_renderer->endFrame();
 }
@@ -106,8 +106,7 @@ void Application::shutdown() {
     if (m_renderer) m_renderer.reset();
     if (m_window) m_window.reset();
 
-    glfwTerminate();
-    m_running = false;
+    quitGLFW();
 }
 
 Window *Application::getWindow() const {
@@ -130,10 +129,18 @@ bool Application::isRunning() const {
     return m_running;
 }
 
-void Application::quit() {
+void Application::quitGLFW() {
+    glfwTerminate();
+}
+
+void Application::setShouldQuit() {
     m_running = false;
 }
 
+float Application::getElapsedTime() const {
+    m_time.getElapsedTime();
+}
+
 float Application::getDeltaTime() const {
-    return m_deltaTime;
+    return m_time.getDeltaTime();
 }
