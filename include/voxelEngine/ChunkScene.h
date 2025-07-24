@@ -13,7 +13,7 @@
 #include "voxelEngine/voxelWorld/world/World.h"
 #include "voxelEngine/voxelWorld/voxel/VoxelArray.h"
 #include "voxelEngine/voxelWorld/world/WorldInteractor.h"
-#include "voxelEngine/voxelWorld/world/ChunkRenderer.h"
+#include "voxelEngine/voxelWorld/world/WorldRenderer.h"
 
 class ChunkScene : public Scene {
 public:
@@ -33,7 +33,7 @@ private:
     std::unique_ptr<CameraController> m_cameraController;
     std::unique_ptr<Shader> m_shader;
     std::unique_ptr<World> m_world;
-    std::unique_ptr<ChunkRenderer> m_chunkRenderer;
+    std::unique_ptr<WorldRenderer> m_chunkRenderer;
     std::unique_ptr<WorldInteractor> m_blockPlacer;
 
     glm::ivec3 m_targetedBlockPos;

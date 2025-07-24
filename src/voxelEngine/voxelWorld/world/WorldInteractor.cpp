@@ -6,10 +6,10 @@
 
 #include "voxelEngine/voxelWorld/world/WorldInteractor.h"
 #include "voxelEngine/voxelWorld/world/World.h"
-#include "voxelEngine/voxelWorld/world/ChunkRenderer.h"
+#include "voxelEngine/voxelWorld/world/WorldRenderer.h"
 #include "core/Logger.h"
 
-WorldInteractor::WorldInteractor(World& world, ChunkRenderer& chunkRenderer)
+WorldInteractor::WorldInteractor(World& world, WorldRenderer& chunkRenderer)
         : m_world(world), m_chunkRenderer(chunkRenderer), m_selectedBlockType(voxel::DIRT) {
     m_raycaster = std::make_unique<VoxelRaycaster>(world);
 }

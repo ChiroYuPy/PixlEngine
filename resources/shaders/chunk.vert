@@ -6,8 +6,8 @@ uniform mat4 u_ViewProjection;
 uniform vec3 u_ChunkPos;
 uniform sampler1D u_ColorTex;
 
-out vec4 vColor;
-flat out uint vFaceID;
+out vec4 v_Color;
+flat out uint v_FaceID;
 
 const vec3 BASE_QUAD[4] = vec3[](
 vec3(0.0, 0.0, 1.0),
@@ -82,6 +82,6 @@ void main() {
 
     gl_Position = u_ViewProjection * vec4(worldPos.xyz, 1.0);
 
-    vColor   = texture(u_ColorTex, float(voxelID) / 255.0);
-    vFaceID  = faceID;
+    v_Color   = texture(u_ColorTex, float(voxelID) / 255.0);
+    v_FaceID  = faceID;
 }

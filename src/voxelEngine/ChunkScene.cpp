@@ -44,7 +44,7 @@ void ChunkScene::setupShader() {
 
 void ChunkScene::setupWorld() {
     m_world = std::make_unique<World>();
-    m_chunkRenderer = std::make_unique<ChunkRenderer>(*m_world, *m_camera, *m_shader);
+    m_chunkRenderer = std::make_unique<WorldRenderer>(*m_world, *m_camera, *m_shader);
 
     m_world->generateArea({-RENDER_DISTANCE, -RENDER_HEIGHT, -RENDER_DISTANCE}, {RENDER_DISTANCE, RENDER_HEIGHT, RENDER_DISTANCE});
     m_chunkRenderer->buildAll();

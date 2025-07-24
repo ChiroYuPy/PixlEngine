@@ -10,12 +10,12 @@
 #include "voxelEngine/voxelWorld/voxel/VoxelType.h"
 
 class World;
-class ChunkRenderer;
+class WorldRenderer;
 class Camera;
 
 class WorldInteractor {
 public:
-    WorldInteractor(World& world, ChunkRenderer& chunkRenderer);
+    WorldInteractor(World& world, WorldRenderer& chunkRenderer);
 
     bool placeBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection);
     bool breakBlock(const glm::vec3& cameraPos, const glm::vec3& cameraDirection);
@@ -34,7 +34,7 @@ public:
 
 private:
     World& m_world;
-    ChunkRenderer& m_chunkRenderer;
+    WorldRenderer& m_chunkRenderer;
     std::unique_ptr<VoxelRaycaster> m_raycaster;
 
     voxel::ID m_selectedBlockType;

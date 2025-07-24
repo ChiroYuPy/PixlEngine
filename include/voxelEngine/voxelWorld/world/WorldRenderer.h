@@ -2,8 +2,8 @@
 // Created by ChiroYuki on 22/07/2025.
 //
 
-#ifndef PIXLENGINE_CHUNKRENDERER_H
-#define PIXLENGINE_CHUNKRENDERER_H
+#ifndef PIXLENGINE_WORLDRENDERER_H
+#define PIXLENGINE_WORLDRENDERER_H
 
 #include "graphics/Camera.h"
 #include "voxelEngine/voxelWorld/world/TextureColorPalette.h"
@@ -11,9 +11,9 @@
 class World;
 class Shader;
 
-class ChunkRenderer {
+class WorldRenderer {
 public:
-    ChunkRenderer(World& world, Camera& camera, Shader& shader);
+    WorldRenderer(World& world, Camera& camera, Shader& shader);
     void buildAll();
     void renderAll();
 
@@ -38,4 +38,4 @@ private:
 };
 
 
-#endif //PIXLENGINE_CHUNKRENDERER_H
+#endif //PIXLENGINE_WORLDRENDERER_H

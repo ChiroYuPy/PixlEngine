@@ -1,7 +1,7 @@
 #version 330 core
 
-in vec4 vColor;
-flat in uint vFaceID;
+in vec4 v_Color;
+flat in uint v_FaceID;
 
 out vec4 FragColor;
 
@@ -15,6 +15,6 @@ const float FACE_SHADES[6] = float[](
 );
 
 void main() {
-    float shade = FACE_SHADES[vFaceID];
-    FragColor = vec4(vColor.rgb * shade, vColor.a);
+    float shade = FACE_SHADES[v_FaceID];
+    FragColor = vec4(v_Color.rgb * shade, v_Color.a);
 }
