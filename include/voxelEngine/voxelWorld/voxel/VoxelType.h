@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <string>
 #include <array>
-#include "core/Color.h"
+#include "math/Color.h"
 
 namespace voxel {
 

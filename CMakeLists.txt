@@ -42,7 +42,7 @@ set(SOURCES
         src/voxelEngine/CameraController.cpp
         src/voxelEngine/voxelWorld/utils/DirectionUtils.cpp
         src/voxelEngine/voxelWorld/generation/FlatTerrainGenerator.cpp
-        src/core/Color.cpp
+        src/math/Color.cpp
         src/utils/ColorUtils.cpp
         src/voxelEngine/voxelWorld/generation/NaturalTerrainGenerator.cpp
         src/voxelEngine/voxelWorld/chunk/ChunkMesh.cpp
@@ -51,12 +51,8 @@ set(SOURCES
         src/voxelEngine/voxelWorld/world/VoxelRaycaster.cpp
         src/voxelEngine/voxelWorld/world/WorldInteractor.cpp
         src/graphics/objects/Buffer.cpp
-        include/graphics/objects/Buffer.h
         src/graphics/objects/VertexArray.cpp
-        include/graphics/objects/VertexArray.h
         src/voxelEngine/voxelWorld/world/TextureColorPalette.cpp
-        include/voxelEngine/voxelWorld/world/TextureColorPalette.h
-        include/graphics/IMesh.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)

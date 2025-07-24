@@ -65,6 +65,7 @@ bool Application::initDefaultHandlers() {
         m_window->resize(width, height);
         m_renderer->setViewport(0, 0, width, height);
     });
+    return true;
 }
 
 void Application::run() {

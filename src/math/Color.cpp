@@ -2,7 +2,7 @@
 // Created by ChiroYuki on 22/07/2025.
 //
 
-#include "core/Color.h"
+#include "math/Color.h"
 
 float Color::clamp(float v) {
     return glm::clamp(v, 0.0f, 1.0f);

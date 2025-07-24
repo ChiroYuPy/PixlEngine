@@ -10,7 +10,7 @@
 #include <memory>
 #include "IMesh.h"
 #include "Shader.h"
-#include "core/Color.h"
+#include "math/Color.h"
 
 enum class PolygonMode {
     Fill,

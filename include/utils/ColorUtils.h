@@ -5,7 +5,7 @@
 #ifndef PIXLENGINE_COLORUTILS_H
 #define PIXLENGINE_COLORUTILS_H
 
-#include "core/Color.h"
+#include "math/Color.h"
 
 namespace utils {
     inline Color blend(const Color &c1, const Color &c2, float t) {
