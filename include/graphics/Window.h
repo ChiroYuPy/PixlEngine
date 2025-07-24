@@ -36,21 +36,18 @@ public:
 
     GLFWwindow* getGLFWWindow() const { return m_window; }
 
-    int getWidth() const { return m_width; }
-    int getHeight() const { return m_height; }
-    float getAspectRatio() const { return (float)m_width / (float)m_height; }
-
-    void setResizeCallback(ResizeCallback callback) { m_resizeCallback = std::move(callback); }
+    void resize(const unsigned int& width, const unsigned int& height);
+    unsigned int getWidth() const;
+    unsigned int getHeight() const;
+    float getAspectRatio() const;
 
     // Utilitaires
     void setVSync(bool enabled);
 
 private:
-    static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
-
     GLFWwindow* m_window = nullptr;
-    int m_width = 0;
-    int m_height = 0;
+    unsigned int m_width = 0;
+    unsigned int m_height = 0;
     ResizeCallback m_resizeCallback;
 
     void setFullscreen(bool fullscreen);

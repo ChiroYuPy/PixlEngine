@@ -25,10 +25,12 @@ bool InputManager::initialize(GLFWwindow* window) {
 
     // Configuration des callbacks GLFW
     glfwSetWindowUserPointer(window, this);
+
     glfwSetKeyCallback(window, keyCallbackGLFW);
     glfwSetMouseButtonCallback(window, mouseButtonCallbackGLFW);
     glfwSetCursorPosCallback(window, cursorPosCallbackGLFW);
     glfwSetScrollCallback(window, scrollCallbackGLFW);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallbackGLFW);
 
     // Initialisation de la position de la souris
     double x, y;
@@ -45,13 +47,11 @@ void InputManager::shutdown() {
     if (!m_initialized) return;
 
     if (m_window) {
-        // Restauration des callbacks à nullptr
         glfwSetKeyCallback(m_window, nullptr);
         glfwSetMouseButtonCallback(m_window, nullptr);
         glfwSetCursorPosCallback(m_window, nullptr);
         glfwSetScrollCallback(m_window, nullptr);
-
-        // Ne pas modifier le UserPointer car d'autres classes pourraient l'utiliser
+        glfwSetFramebufferSizeCallback(m_window, nullptr);
     }
 
     m_keyStates.clear();
@@ -199,5 +199,14 @@ void InputManager::scrollCallbackGLFW(GLFWwindow* window, double xoffset, double
     // Appel du callback utilisateur si défini
     if (input->m_scrollCallback) {
         input->m_scrollCallback(xoffset, yoffset);
+    }
+}
+
+void InputManager::framebufferSizeCallbackGLFW(GLFWwindow* window, int width, int height) {
+    auto* input = static_cast<InputManager*>(glfwGetWindowUserPointer(window));
+    if (!input || !input->m_initialized) return;
+
+    if (input->m_resizeCallback) {
+        input->m_resizeCallback(width, height);
     }
 }

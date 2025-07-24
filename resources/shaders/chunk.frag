@@ -1,19 +1,20 @@
 #version 330 core
 
 in vec4 vColor;
-flat in vec3 vNormal;
+flat in uint vFaceID;
 
 out vec4 FragColor;
 
+const float FACE_SHADES[6] = float[](
+    0.9,  // +Z
+    0.7,  // -Z
+    0.85, // +X
+    0.75, // -X
+    1.0,  // +Y
+    0.4   // -Y
+);
+
 void main() {
-    float shade = 1.0;
-
-    if      (vNormal.y > 0.9)  shade = 1.0;  // +Y
-    else if (vNormal.y < -0.9) shade = 0.4;  // -Y
-    else if (vNormal.x > 0.9)  shade = 0.85; // +X
-    else if (vNormal.x < -0.9) shade = 0.75; // -X
-    else if (vNormal.z > 0.9)  shade = 0.9;  // +Z
-    else if (vNormal.z < -0.9) shade = 0.7;  // -Z
-
+    float shade = FACE_SHADES[vFaceID];
     FragColor = vec4(vColor.rgb * shade, vColor.a);
 }

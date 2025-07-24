@@ -22,7 +22,21 @@ private:
     Camera& m_camera;
     Shader& m_shader;
 
-    TextureColorPalette m_palette;
+    TextureColorPalette m_textureColorpalette;
+
+    glm::mat4 m_viewProjection;
+
+    void setupRenderStates();
+
+    void setupMatrices();
+
+    void bindCommonResources();
+
+    void renderOpaquePass();
+
+    void renderEmissivePass();
+
+    void renderTransparentPass();
 };
 
 

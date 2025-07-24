@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 #include <functional>
 #include <unordered_map>
+#include <utility>
 
 enum class KeyState {
     Released,
@@ -31,6 +32,7 @@ public:
     using MouseCallback = std::function<void(MouseButton, KeyState)>;
     using MouseMoveCallback = std::function<void(double, double)>;
     using ScrollCallback = std::function<void(double, double)>;
+    using ResizeCallback = std::function<void(int, int)>;
 
     InputManager() = default;
     ~InputManager();
@@ -58,10 +60,11 @@ public:
     glm::vec2 getScrollOffset() const { return m_scrollOffset; }
 
     // Callbacks
-    void setKeyCallback(KeyCallback callback) { m_keyCallback = callback; }
-    void setMouseCallback(MouseCallback callback) { m_mouseCallback = callback; }
-    void setMouseMoveCallback(MouseMoveCallback callback) { m_mouseMoveCallback = callback; }
-    void setScrollCallback(ScrollCallback callback) { m_scrollCallback = callback; }
+    void setKeyCallback(KeyCallback callback) { m_keyCallback = std::move(callback); }
+    void setMouseCallback(MouseCallback callback) { m_mouseCallback = std::move(callback); }
+    void setMouseMoveCallback(MouseMoveCallback callback) { m_mouseMoveCallback = std::move(callback); }
+    void setScrollCallback(ScrollCallback callback) { m_scrollCallback = std::move(callback); }
+    void setResizeCallback(ResizeCallback callback) { m_resizeCallback = std::move(callback); }
 
     // Utilitaires
     void setCursorMode(int mode); // GLFW_CURSOR_NORMAL, GLFW_CURSOR_HIDDEN, GLFW_CURSOR_DISABLED
@@ -71,6 +74,7 @@ private:
     static void mouseButtonCallbackGLFW(GLFWwindow* window, int button, int action, int mods);
     static void cursorPosCallbackGLFW(GLFWwindow* window, double xpos, double ypos);
     static void scrollCallbackGLFW(GLFWwindow* window, double xoffset, double yoffset);
+    static void framebufferSizeCallbackGLFW(GLFWwindow *window, int width, int height);
 
     GLFWwindow* m_window = nullptr;
     std::unordered_map<int, KeyState> m_keyStates;
@@ -87,6 +91,7 @@ private:
     MouseCallback m_mouseCallback;
     MouseMoveCallback m_mouseMoveCallback;
     ScrollCallback m_scrollCallback;
+    ResizeCallback m_resizeCallback;
 };
 
 #endif //PIXLENGINE_INPUTMANAGER_H

@@ -4,6 +4,7 @@
 
 #include "core/Application.h"
 #include "graphics/Window.h"
+#include "utils/Logger.h"
 #include <iostream>
 
 Application& Application::getInstance() {
@@ -47,9 +48,9 @@ bool Application::initialize() {
     // Créer le scene manager
     m_sceneManager = std::make_unique<SceneManager>();
 
-    // Setup callbacks
-    m_window->setResizeCallback([this](int width, int height) {
-        m_renderer->setViewport(0, 0, width, height);
+    m_inputManager->setResizeCallback([this](int width, int height) {
+        Logger::info(std::format("Window resized to {}x{}", width, height));
+        m_window->resize(width, height);
     });
 
     m_window->setVSync(false);
@@ -77,9 +78,8 @@ void Application::run() {
 }
 
 void Application::update(float deltaTime) {
-    if (m_sceneManager) {
+    if (m_sceneManager)
         m_sceneManager->update(deltaTime);
-    }
 }
 
 
@@ -87,9 +87,8 @@ void Application::render() {
     m_renderer->beginFrame();
     m_renderer->clear();
 
-    if (m_sceneManager) {
+    if (m_sceneManager)
         m_sceneManager->render();
-    }
 
     m_renderer->endFrame();
 }

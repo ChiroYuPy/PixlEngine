@@ -11,7 +11,8 @@
 #include <format>
 
 World::World() {
-    m_generator = std::make_unique<NaturalTerrainGenerator>(0);
+    // m_generator = std::make_unique<NaturalTerrainGenerator>(0);
+    m_generator = std::make_unique<FlatTerrainGenerator>(0);
 }
 
 voxel::ID World::getVoxel(int worldX, int worldY, int worldZ) const {

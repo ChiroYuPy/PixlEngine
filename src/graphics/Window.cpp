@@ -28,7 +28,6 @@ bool Window::initialize(const WindowConfig& config) {
 
     glfwMakeContextCurrent(m_window);
     glfwSetWindowUserPointer(m_window, this);
-    glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
 
     setVSync(config.vsync);
 
@@ -81,13 +80,14 @@ void Window::setFullscreen(bool fullscreen) {
     }
 }
 
-void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
-    auto* windowObj = static_cast<Window*>(glfwGetWindowUserPointer(window));
-    if (windowObj) {
-        windowObj->m_width = width;
-        windowObj->m_height = height;
-        if (windowObj->m_resizeCallback) {
-            windowObj->m_resizeCallback(width, height);
-        }
-    }
+void Window::resize(const unsigned int &width, const unsigned int &height) {
+    m_width = width;
+    m_height = height;
+    glViewport(0, 0, width, height);
 }
+
+unsigned int Window::getWidth() const { return m_width; }
+
+unsigned int Window::getHeight() const { return m_height; }
+
+float Window::getAspectRatio() const { return (float)m_width / (float)m_height; }
