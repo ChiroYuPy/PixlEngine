@@ -40,7 +40,7 @@ void WorldRenderer::setupMatrices() {
 }
 
 void WorldRenderer::bindCommonResources() {
-    m_shader.use();
+    m_shader.Bind();
     m_shader.setMat4("u_ViewProjection", m_viewProjection);
 
     glActiveTexture(GL_TEXTURE0);

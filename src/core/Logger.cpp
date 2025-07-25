@@ -56,7 +56,7 @@ std::string getTimestamp() {
     auto time = system_clock::to_time_t(now);
     std::tm localTime{};
 
-    // Verify if we are on windows, so we can use the right time
+    // Verify if we are on windows, so we can Bind the right time
 #ifdef _WIN32
     localtime_s(&localTime, &time);
 #else

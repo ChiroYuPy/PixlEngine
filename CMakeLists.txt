@@ -55,13 +55,12 @@ set(SOURCES
         src/voxelEngine/voxelWorld/world/TextureColorPalette.cpp
         src/core/Time.cpp
         src/core/Engine.cpp
-        include/ecs/EntityManager.cpp
-        include/ecs/ComponentArray.cpp
-        include/ecs/ComponentManager.cpp
-        include/ecs/SystemManager.cpp
-        include/ecs/Coordinator.cpp
+        # include/ecs/EntityManager.cpp
+        # include/ecs/ComponentArray.cpp
+        # include/ecs/ComponentManager.cpp
+        # include/ecs/SystemManager.cpp
+        # include/ecs/Coordinator.cpp
         src/graphics/RenderState.cpp
-        include/graphics/RenderState.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)

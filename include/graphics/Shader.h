@@ -17,8 +17,8 @@ public:
     bool loadFromFiles(const std::string& vertexPath, const std::string& fragmentPath);
     bool loadFromStrings(const std::string& vertexSource, const std::string& fragmentSource);
 
-    void use() const;
-    void unuse() const;
+    void Bind() const;
+    void Unbind() const;
 
     // Uniformes
     void setInt(const std::string& name, int value);
@@ -26,9 +26,6 @@ public:
     void setVec3(const std::string& name, const glm::vec3& value);
     void setVec4(const std::string& name, const glm::vec4& value);
     void setMat4(const std::string& name, const glm::mat4& value);
-
-    GLuint getProgram() const { return m_program; }
-    bool isValid() const { return m_program != 0; }
 
 private:
     bool compileShader(const std::string& source, GLenum type, GLuint& shader);

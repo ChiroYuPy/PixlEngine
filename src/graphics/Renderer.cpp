@@ -52,7 +52,7 @@ void Renderer::setViewProjection(const glm::mat4& view, const glm::mat4& project
 
 void Renderer::setShader(Shader* shader) {
     currentShader = shader;
-    currentShader->use();
+    currentShader->Bind();
 }
 
 void Renderer::setCamera(Camera* camera) {
@@ -63,11 +63,11 @@ void Renderer::drawMesh(const IMesh& mesh, const glm::mat4& modelMatrix) {
     currentShader->setMat4("u_Model", modelMatrix); // not yet used
     currentShader->setMat4("u_ViewProjection", currentCamera->getViewMatrix() * currentCamera->getProjectionMatrix());
 
-    currentShader->use();
+    currentShader->Bind();
     mesh.bind();
     mesh.draw();
     mesh.unbind();
-    currentShader->unuse();
+    currentShader->Unbind();
 }
 
 void Renderer::setRenderPolygonMode(PolygonMode mode, PolygonFace face) {

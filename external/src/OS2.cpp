@@ -133,8 +133,8 @@ double OpenSimplex2S::noise3_Classic(double x, double y, double z)
 /**
  * 3D Re-oriented 8-point BCC noise, with better visual isotropy in (X, Y).
  * Recommended for 3D terrain and time-varied animations.
- * The Z coordinate should always be the "different" coordinate in your use case.
- * If Y is vertical in world coordinates, call noise3_XYBeforeZ(x, z, Y) or use noise3_XZBeforeY.
+ * The Z coordinate should always be the "different" coordinate in your Bind case.
+ * If Y is vertical in world coordinates, call noise3_XYBeforeZ(x, z, Y) or Bind noise3_XZBeforeY.
  * If Z is vertical in world coordinates, call noise3_XYBeforeZ(x, y, Z).
  * For a time varied animation, call noise3_XYBeforeZ(x, y, T).
  */
@@ -156,10 +156,10 @@ double OpenSimplex2S::noise3_XYBeforeZ(double x, double y, double z)
 /**
  * 3D Re-oriented 8-point BCC noise, with better visual isotropy in (X, Z).
  * Recommended for 3D terrain and time-varied animations.
- * The Y coordinate should always be the "different" coordinate in your use case.
+ * The Y coordinate should always be the "different" coordinate in your Bind case.
  * If Y is vertical in world coordinates, call noise3_XZBeforeY(x, Y, z).
- * If Z is vertical in world coordinates, call noise3_XZBeforeY(x, Z, y) or use noise3_XYBeforeZ.
- * For a time varied animation, call noise3_XZBeforeY(x, T, y) or use noise3_XYBeforeZ.
+ * If Z is vertical in world coordinates, call noise3_XZBeforeY(x, Z, y) or Bind noise3_XYBeforeZ.
+ * For a time varied animation, call noise3_XZBeforeY(x, T, y) or Bind noise3_XYBeforeZ.
  */
 double OpenSimplex2S::noise3_XZBeforeY(double x, double y, double z)
 {

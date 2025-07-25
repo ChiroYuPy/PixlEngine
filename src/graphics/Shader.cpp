@@ -72,7 +72,7 @@ bool Shader::compileShader(const std::string& source, GLenum type, GLuint& shade
     return true;
 }
 
-void Shader::use() const {
+void Shader::Bind() const {
     if (m_program != 0)
         glUseProgram(m_program);
 }
@@ -93,7 +93,7 @@ int Shader::getUniformLocation(const std::string& name) {
     return location;
 }
 
-void Shader::unuse() const {
+void Shader::Unbind() const {
     glUseProgram(0);
 }
 
