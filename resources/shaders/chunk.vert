@@ -72,7 +72,7 @@ void main() {
     vec3 voxelPos = vec3(float(x), float(y), float(z));
     vec4 localPos = vec4(BASE_QUAD[gl_VertexID], 1.0);
 
-    if (localPos.x == 1) localPos.x += length;
+    localPos.x += float(int(gl_VertexID) % 2) * float(length);
 
     // Appliquer la matrice de rotation + translation de face
     vec4 faceOffset = FACE_MAT[faceID] * localPos;

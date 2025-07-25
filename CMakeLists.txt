@@ -46,7 +46,7 @@ set(SOURCES
         src/utils/ColorUtils.cpp
         src/voxelEngine/voxelWorld/generation/NaturalTerrainGenerator.cpp
         src/voxelEngine/voxelWorld/chunk/ChunkMesh.cpp
-        src/voxelEngine/voxelWorld/world/ChunkRenderer.cpp
+        src/voxelEngine/voxelWorld/world/WorldRenderer.cpp
         src/voxelEngine/voxelWorld/world/WorldGenerator.cpp
         src/voxelEngine/voxelWorld/world/VoxelRaycaster.cpp
         src/voxelEngine/voxelWorld/world/WorldInteractor.cpp
@@ -54,9 +54,14 @@ set(SOURCES
         src/graphics/objects/VertexArray.cpp
         src/voxelEngine/voxelWorld/world/TextureColorPalette.cpp
         src/core/Time.cpp
-        include/core/Time.h
         src/core/Engine.cpp
-        include/core/Engine.h
+        include/ecs/EntityManager.cpp
+        include/ecs/ComponentArray.cpp
+        include/ecs/ComponentManager.cpp
+        include/ecs/SystemManager.cpp
+        include/ecs/Coordinator.cpp
+        src/graphics/RenderState.cpp
+        include/graphics/RenderState.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)

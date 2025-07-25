@@ -5,7 +5,9 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+
 #include "graphics/Shader.h"
+#include "core/Logger.h"
 
 Shader::~Shader() {
     if (m_program != 0) {
@@ -18,7 +20,7 @@ bool Shader::loadFromFiles(const std::string& vertexPath, const std::string& fra
     std::ifstream fShaderFile(fragmentPath);
 
     if (!vShaderFile.is_open() || !fShaderFile.is_open()) {
-        std::cerr << "Failed to open shader files" << std::endl;
+        Logger::error() << "Failed to open shader files";
         return false;
     }
 
@@ -32,9 +34,8 @@ bool Shader::loadFromFiles(const std::string& vertexPath, const std::string& fra
 bool Shader::loadFromStrings(const std::string& vertexSource, const std::string& fragmentSource) {
     GLuint vertexShader, fragmentShader;
 
-    if (!compileShader(vertexSource, GL_VERTEX_SHADER, vertexShader)) {
+    if (!compileShader(vertexSource, GL_VERTEX_SHADER, vertexShader))
         return false;
-    }
 
     if (!compileShader(fragmentSource, GL_FRAGMENT_SHADER, fragmentShader)) {
         glDeleteShader(vertexShader);
@@ -64,7 +65,7 @@ bool Shader::compileShader(const std::string& source, GLenum type, GLuint& shade
     if (!success) {
         GLchar infoLog[512];
         glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-        std::cerr << "Shader compilation failed: " << infoLog << std::endl;
+        Logger::error() << "Shader compilation failed: " << infoLog;
         return false;
     }
 
@@ -72,23 +73,20 @@ bool Shader::compileShader(const std::string& source, GLenum type, GLuint& shade
 }
 
 void Shader::use() const {
-    if (m_program != 0) {
+    if (m_program != 0)
         glUseProgram(m_program);
-    }
 }
 
 void Shader::setMat4(const std::string& name, const glm::mat4& value) {
     int location = getUniformLocation(name);
-    if (location >= 0) {
+    if (location >= 0)
         glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
-    }
 }
 
 int Shader::getUniformLocation(const std::string& name) {
     auto it = m_uniformCache.find(name);
-    if (it != m_uniformCache.end()) {
+    if (it != m_uniformCache.end())
         return it->second;
-    }
 
     int location = glGetUniformLocation(m_program, name.c_str());
     m_uniformCache[name] = location;
@@ -101,30 +99,26 @@ void Shader::unuse() const {
 
 void Shader::setInt(const std::string& name, int value) {
     int location = getUniformLocation(name);
-    if (location >= 0) {
+    if (location >= 0)
         glUniform1i(location, value);
-    }
 }
 
 void Shader::setFloat(const std::string& name, float value) {
     int location = getUniformLocation(name);
-    if (location >= 0) {
+    if (location >= 0)
         glUniform1f(location, value);
-    }
 }
 
 void Shader::setVec3(const std::string& name, const glm::vec3& value) {
     int location = getUniformLocation(name);
-    if (location >= 0) {
+    if (location >= 0)
         glUniform3fv(location, 1, &value[0]);
-    }
 }
 
 void Shader::setVec4(const std::string& name, const glm::vec4& value) {
     int location = getUniformLocation(name);
-    if (location >= 0) {
+    if (location >= 0)
         glUniform4fv(location, 1, &value[0]);
-    }
 }
 
 bool Shader::linkProgram(GLuint vertexShader, GLuint fragmentShader) {

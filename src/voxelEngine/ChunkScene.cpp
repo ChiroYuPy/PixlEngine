@@ -8,7 +8,7 @@
 #include "voxelEngine/voxelWorld/chunk/Chunk.h"
 #include "core/Logger.h"
 
-constexpr unsigned int RENDER_DISTANCE = 4;
+constexpr unsigned int RENDER_DISTANCE = 1;
 constexpr unsigned int RENDER_HEIGHT = 1;
 
 bool ChunkScene::initialize() {
@@ -86,7 +86,7 @@ void ChunkScene::setupInput() {
         voxelID += offset;
 
         m_blockPlacer->setSelectedVoxelID(voxelID);
-        Logger::debug("block selected: " + voxel::getDisplayName(voxelID));
+        Logger::debug() << "block selected: " + voxel::getDisplayName(voxelID);
     });
 
     input->setMouseCallback([this](MouseButton button, KeyState state) {
@@ -97,9 +97,9 @@ void ChunkScene::setupInput() {
                 glm::vec3 cameraDir = m_camera->getFront();
 
                 if (m_blockPlacer->breakBlock(cameraPos, cameraDir)) {
-                    Logger::info("Block broken!");
+                    Logger::info() << "Block broken!";
                 } else {
-                    Logger::info("No block to break");
+                    Logger::info() << "No block to break";
                 }
             } else {
                 m_cameraController->setActive(true);
@@ -113,9 +113,9 @@ void ChunkScene::setupInput() {
                 glm::vec3 cameraDir = m_camera->getFront();
 
                 if (m_blockPlacer->placeBlock(cameraPos, cameraDir)) {
-                    Logger::info("Block placed!");
+                    Logger::info() << "Block placed!";
                 } else {
-                    Logger::info("Cannot place block here");
+                    Logger::info() << "Cannot place block here";
                 }
             }
         }
@@ -131,7 +131,7 @@ void ChunkScene::update(float deltaTime) {
 
     if (m_fpsTimer >= 1.0f) {
         int fps = m_frameCount;
-        Logger::info(std::format("FPS: {}", fps));
+        Logger::info() << std::format("FPS: {}", fps);
         m_fpsTimer = 0.0f;
         m_frameCount = 0;
     }
@@ -158,7 +158,7 @@ void ChunkScene::render() {
     auto* window = Application::get().getWindow();
 
     if (!renderer || !window || !m_camera || !m_shader) {
-        Logger::warn("render aborted, missing some components");
+        Logger::warn() << "render aborted, missing some components";
         return;
     }
 

@@ -26,7 +26,7 @@ bool Window::initGLFWwindow() {
     m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
 
     if (!m_window) {
-        Logger::error("Failed to create GLFW window");
+        Logger::error() << "Failed to create GLFW window";
         return false;
     }
 

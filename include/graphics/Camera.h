@@ -27,51 +27,53 @@ class Camera {
 public:
     Camera();
 
-    glm::mat4 getViewMatrix() const;
-    glm::mat4 getProjectionMatrix(float aspectRatio) const;
-
+    // Mouvements
     void move(CameraMovement direction, float velocity);
     void rotate(float xOffset, float yOffset);
-
-    // Position & Orientation
-    glm::vec3 getPosition() const;
+    void setOrientation(float yaw, float pitch);
     void setPosition(const glm::vec3& position);
 
+    // Projections
+    void setFOV(float fov);
+    void setNearPlane(float nearPlane);
+    void setFarPlane(float farPlane);
+
+    // Matrices
+    glm::mat4 getViewMatrix();
+    glm::mat4 getProjectionMatrix();
+
+    // Getters
+    glm::vec3 getPosition() const;
     glm::vec3 getFront() const;
     glm::vec3 getUp() const;
     glm::vec3 getRight() const;
-    void setOrientation(float yaw, float pitch);
+
     float getYaw() const;
     float getPitch() const;
-
-    // Configuration
     float getFOV() const;
-    void setFOV(float fov);
-
     float getNearPlane() const;
-    void setNearPlane(float nearPlane);
-
     float getFarPlane() const;
-    void setFarPlane(float farPlane);
 
 private:
     void updateCameraVectors();
+    void updateAspectRatio();
+    void markViewDirty();
+    void markProjDirty();
 
-    // Attributs de position et direction
     glm::vec3 m_position;
-    glm::vec3 m_front{};
-    glm::vec3 m_up{};
-    glm::vec3 m_right{};
+    glm::vec3 m_front{}, m_up{}, m_right{};
     glm::vec3 m_worldUp;
 
-    // Angles d'Euler
-    float m_yaw;
-    float m_pitch;
-
-    // Paramètres de configuration
+    float m_yaw, m_pitch;
     float m_fov;
-    float m_nearPlane;
-    float m_farPlane;
+    float m_nearPlane, m_farPlane;
+    float aspectRatio = 1.f;
+
+    glm::mat4 m_cachedViewMatrix;
+    glm::mat4 m_cachedProjectionMatrix;
+
+    bool m_viewDirty = true;
+    bool m_projDirty = true;
 };
 
 #endif //PIXLENGINE_CAMERA_H

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include "graphics/Camera.h"
+#include "core/Application.h"
 
 Camera::Camera()
         : m_position(0.f, 0.f, 0.f),
@@ -18,12 +19,29 @@ Camera::Camera()
     updateCameraVectors();
 }
 
-glm::mat4 Camera::getViewMatrix() const {
-    return glm::lookAt(m_position, m_position + m_front, m_up);
+glm::mat4 Camera::getViewMatrix() {
+    if (m_viewDirty) {
+        m_cachedViewMatrix = glm::lookAt(m_position, m_position + m_front, m_up);
+        m_viewDirty = false;
+    }
+    return m_cachedViewMatrix;
 }
 
-glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const {
-    return glm::perspective(glm::radians(m_fov), aspectRatio, m_nearPlane, m_farPlane);
+void Camera::updateAspectRatio() {
+    float ar = Application::get().getWindow()->getAspectRatio();
+    if (aspectRatio != ar) {
+        aspectRatio = ar;
+        markProjDirty();
+    }
+}
+
+glm::mat4 Camera::getProjectionMatrix() {
+    updateAspectRatio();
+    if (m_projDirty) {
+        m_cachedProjectionMatrix = glm::perspective(glm::radians(m_fov), aspectRatio, m_nearPlane, m_farPlane);
+        m_projDirty = false;
+    }
+    return m_cachedProjectionMatrix;
 }
 
 void Camera::move(CameraMovement direction, float velocity) {
@@ -34,16 +52,18 @@ void Camera::move(CameraMovement direction, float velocity) {
         case CameraMovement::Right:    m_position += m_right * velocity; break;
         case CameraMovement::Up:       m_position += m_up * velocity; break;
         case CameraMovement::Down:     m_position -= m_up * velocity; break;
+        default: break;
     }
+    markViewDirty();
 }
 
 void Camera::rotate(float xOffset, float yOffset) {
     m_yaw += xOffset;
     m_pitch += yOffset;
-
     m_pitch = std::clamp(m_pitch, MIN_PITCH, MAX_PITCH);
 
     updateCameraVectors();
+    markViewDirty();
 }
 
 void Camera::setOrientation(float yaw, float pitch) {
@@ -68,7 +88,10 @@ void Camera::updateCameraVectors() {
 // ==== Getters / Setters ====
 
 glm::vec3 Camera::getPosition() const { return m_position; }
-void Camera::setPosition(const glm::vec3& position) { m_position = position; }
+void Camera::setPosition(const glm::vec3& position) {
+    m_position = position;
+    markViewDirty();
+}
 
 glm::vec3 Camera::getFront() const { return m_front; }
 glm::vec3 Camera::getUp() const { return m_up; }
@@ -80,14 +103,27 @@ float Camera::getPitch() const { return m_pitch; }
 float Camera::getFOV() const { return m_fov; }
 void Camera::setFOV(float fov) {
     m_fov = std::clamp(fov, MIN_FOV, MAX_FOV);
+    markProjDirty();
 }
 
 float Camera::getNearPlane() const { return m_nearPlane; }
-void Camera::setNearPlane(float nearPlane) {
-    m_nearPlane = std::max(0.01f, nearPlane); // éviter near=0
-}
 
 float Camera::getFarPlane() const { return m_farPlane; }
+
+void Camera::setNearPlane(float nearPlane) {
+    m_nearPlane = std::max(0.01f, nearPlane);
+    markProjDirty();
+}
+
 void Camera::setFarPlane(float farPlane) {
-    m_farPlane = std::max(m_nearPlane + 0.01f, farPlane); // doit être > nearPlane
+    m_farPlane = std::max(m_nearPlane + 0.01f, farPlane);
+    markProjDirty();
+}
+
+void Camera::markViewDirty() {
+    m_viewDirty = true;
+}
+
+void Camera::markProjDirty() {
+    m_projDirty = true;
 }

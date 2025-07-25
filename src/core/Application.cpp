@@ -5,7 +5,6 @@
 #include "core/Application.h"
 #include "graphics/Window.h"
 #include "core/Logger.h"
-#include <iostream>
 
 Application& Application::get() {
     static Application instance;
@@ -25,7 +24,7 @@ bool Application::initialize() {
 
 bool Application::initGLFW() {
     if (!glfwInit()) {
-        Logger::error("Failed to initialize GLFW");
+        Logger::error() << "Failed to initialize GLFW";
         return false;
     }
     return true;
@@ -35,21 +34,21 @@ bool Application::initServices() {
     // ------------ [ Window ] ------------ #
     m_window = std::make_unique<Window>(1280, 720, "Pixl Engine");
     if (!m_window->initialize()) {
-        Logger::error("Failed to initialize window");
+        Logger::error() << "Failed to initialize window";
         return false;
     }
 
     // ------------ [ Renderer ] ------------ #
     m_renderer = std::make_unique<Renderer>();
     if (!m_renderer->initialize()) {
-        Logger::error("Failed to initialize renderer");
+        Logger::error() << "Failed to initialize renderer";
         return false;
     }
 
     // ------------ [ InputManager ] ------------ #
     m_inputManager = std::make_unique<InputManager>();
     if (!m_inputManager->initialize(m_window->getGLFWWindow())) {
-        Logger::error("Failed to initialize input manager");
+        Logger::error() << "Failed to initialize input manager";
         return false;
     }
 
@@ -61,7 +60,7 @@ bool Application::initServices() {
 
 void Application::initDefaultHandlers() {
     m_inputManager->setResizeCallback([this](int width, int height) {
-        Logger::info(std::format("Window resized to {}x{}", width, height));
+        Logger::info() << std::format("Window resized to {}x{}", width, height);
         m_window->resize(width, height);
         m_renderer->setViewport(0, 0, width, height);
     });
@@ -142,7 +141,7 @@ void Application::setShouldQuit() {
 }
 
 float Application::getElapsedTime() const {
-    m_time.getElapsedTime();
+    return m_time.getElapsedTime();
 }
 
 float Application::getDeltaTime() const {

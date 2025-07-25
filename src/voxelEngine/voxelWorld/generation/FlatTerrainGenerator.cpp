@@ -15,7 +15,7 @@ voxel::ID FlatTerrainGenerator::generateVoxel(const glm::ivec3 &worldPos) {
 
 void FlatTerrainGenerator::generateChunk(Chunk &voxelChunk) {
     const glm::ivec3 chunkPos = voxelChunk.getPosition();
-    Logger::info(std::format("chunkPos: {}, {}, {}", chunkPos.x, chunkPos.y, chunkPos.z));
+    Logger::info() << std::format("chunkPos: {}, {}, {}", chunkPos.x, chunkPos.y, chunkPos.z);
 
     for (int y = 0; y < VoxelArray::SIZE; ++y) {
         int worldY = chunkPos.y * VoxelArray::SIZE + y;

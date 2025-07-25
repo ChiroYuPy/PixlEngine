@@ -15,20 +15,6 @@ const int Logger::SeparatorWidth = 48;
 const std::string Logger::SeparatorString = std::string(SeparatorWidth, '-');
 LogLevel Logger::currentLevel = LogLevel::Info;
 
-std::string loadLogoFromFile(const std::string& path) {
-    std::ifstream file(path);
-    if (!file.is_open()) return "[LOGO FILE NOT FOUND]";
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
-}
-
-const std::string AsciiLogo = loadLogoFromFile("resources/ascii_logo.txt");
-
-void Logger::sendLogo() {
-    std::cout << "\033[1;36m" << AsciiLogo << "\033[0m" << std::endl;
-}
-
 void Logger::setLevel(const LogLevel level) {
     currentLevel = level;
 }
@@ -89,58 +75,10 @@ void Logger::log(LogLevel level, const std::string& message) {
     out << getColor(level) << getTimestamp() << getHeader(level) << message << getColor(LogLevel::None) << std::endl;
 }
 
-void Logger::trace(const std::string& message) {
-    log(LogLevel::Trace, message);
-}
-
-void Logger::debug(const std::string& message) {
-    log(LogLevel::Debug, message);
-}
-
-void Logger::info(const std::string& message) {
-    log(LogLevel::Info, message);
-}
-
-void Logger::success(const std::string& message) {
-    log(LogLevel::Success, message);
-}
-
-void Logger::warn(const std::string& message) {
-    log(LogLevel::Warn, message);
-}
-
-void Logger::error(const std::string &message) {
-    log(LogLevel::Error, message);
-}
-
-void Logger::fatal(const std::string& message) {
-    log(LogLevel::Fatal, message);
-    std::terminate();
-}
-
-void Logger::separator() {
-    if (static_cast<int>(LogLevel::Info) < static_cast<int>(currentLevel)) return;
-    std::cout << SeparatorString << std::endl;
-}
-
-void Logger::separator(const std::string& message) {
-    if (static_cast<int>(LogLevel::Info) < static_cast<int>(currentLevel)) return;
-
-    if (message.empty()) {
-        separator();
-        return;
-    }
-
-    std::string label = "[ " + message + " ]";
-    int totalPadding = SeparatorWidth - static_cast<int>(label.size());
-
-    if (totalPadding <= 0) {
-        label = "[ " + message.substr(0, SeparatorWidth - 8) + "... ]";
-        totalPadding = SeparatorWidth - static_cast<int>(label.size());
-    }
-
-    const int left = totalPadding / 2;
-    const int right = totalPadding - left;
-
-    std::cout << std::string(left, '-') << label << std::string(right, '-') << std::endl;
-}
+Logger::LogStream Logger::debug()   { return LogStream(LogLevel::Debug); }
+Logger::LogStream Logger::info()    { return LogStream(LogLevel::Info); }
+Logger::LogStream Logger::warn()    { return LogStream(LogLevel::Warn); }
+Logger::LogStream Logger::error()   { return LogStream(LogLevel::Error); }
+Logger::LogStream Logger::fatal()   { return LogStream(LogLevel::Fatal); }
+Logger::LogStream Logger::trace()   { return LogStream(LogLevel::Trace); }
+Logger::LogStream Logger::success() { return LogStream(LogLevel::Success); }

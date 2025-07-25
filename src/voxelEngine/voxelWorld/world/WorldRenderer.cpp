@@ -1,6 +1,7 @@
 #include "voxelEngine/voxelWorld/world/WorldRenderer.h"
 #include "voxelEngine/voxelWorld/world/World.h"
 #include "core/Application.h"
+#include "core/Logger.h"
 
 WorldRenderer::WorldRenderer(World& world, Camera& camera, Shader& shader)
         : m_world(world), m_camera(camera), m_shader(shader), m_textureColorpalette() {
@@ -9,7 +10,6 @@ WorldRenderer::WorldRenderer(World& world, Camera& camera, Shader& shader)
 }
 
 void WorldRenderer::setupRenderStates() {
-    // Configuration OpenGL de base
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
@@ -33,9 +33,8 @@ void WorldRenderer::renderAll() {
 }
 
 void WorldRenderer::setupMatrices() {
-    float aspectRatio = Application::get().getWindow()->getAspectRatio();
     glm::mat4 view = m_camera.getViewMatrix();
-    glm::mat4 proj = m_camera.getProjectionMatrix(aspectRatio);
+    glm::mat4 proj = m_camera.getProjectionMatrix();
 
     m_viewProjection = proj * view; // Pré-calcul CPU
 }

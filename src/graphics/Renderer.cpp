@@ -50,19 +50,18 @@ void Renderer::setViewProjection(const glm::mat4& view, const glm::mat4& project
     projectionMatrix = projection;
 }
 
-void Renderer::setShader(std::shared_ptr<Shader> shader) {
+void Renderer::setShader(Shader* shader) {
     currentShader = shader;
-    if (currentShader) currentShader->use();
+    currentShader->use();
+}
+
+void Renderer::setCamera(Camera* camera) {
+    currentCamera = camera;
 }
 
 void Renderer::drawMesh(const IMesh& mesh, const glm::mat4& modelMatrix) {
-    if (!currentShader) {
-        Logger::warn("[Renderer] No shader set before drawMesh()");
-        return;
-    }
-
     currentShader->setMat4("u_Model", modelMatrix); // not yet used
-    currentShader->setMat4("u_ViewProjection", viewMatrix * projectionMatrix);
+    currentShader->setMat4("u_ViewProjection", currentCamera->getViewMatrix() * currentCamera->getProjectionMatrix());
 
     currentShader->use();
     mesh.bind();

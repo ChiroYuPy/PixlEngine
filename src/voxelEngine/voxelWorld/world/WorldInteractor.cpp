@@ -32,7 +32,7 @@ bool WorldInteractor::breakBlock(const glm::vec3& cameraPos, const glm::vec3& ca
 
 bool WorldInteractor::placeBlockAt(const glm::ivec3& position, int blockType) {
     if (m_world.getVoxel(position.x, position.y, position.z) != voxel::AIR) {
-        Logger::warn("Cannot place block: position already occupied");
+        Logger::warn() << "Cannot place block: position already occupied";
         return false;
     }
 
@@ -40,13 +40,13 @@ bool WorldInteractor::placeBlockAt(const glm::ivec3& position, int blockType) {
 
     m_chunkRenderer.buildAll();
 
-    Logger::info(std::format("Block placed at ({}, {}, {})", position.x, position.y, position.z));
+    Logger::info() << std::format("Block placed at ({}, {}, {})", position.x, position.y, position.z);
     return true;
 }
 
 bool WorldInteractor::breakBlockAt(const glm::ivec3& position) {
     if (m_world.getVoxel(position.x, position.y, position.z) == voxel::AIR) {
-        Logger::warn("Cannot break block: no block at position");
+        Logger::warn() << "Cannot break block: no block at position";
         return false;
     }
 
@@ -54,7 +54,7 @@ bool WorldInteractor::breakBlockAt(const glm::ivec3& position) {
 
     m_chunkRenderer.buildAll();
 
-    Logger::info(std::format("Block broken at ({}, {}, {})", position.x, position.y, position.z));
+    Logger::info() << std::format("Block broken at ({}, {}, {})", position.x, position.y, position.z);
     return true;
 }
 

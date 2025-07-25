@@ -12,12 +12,12 @@ InputManager::~InputManager() {
 
 bool InputManager::initialize(GLFWwindow* window) {
     if (m_initialized) {
-        Logger::warn("InputManager already initialized");
+        Logger::warn() << "InputManager already initialized";
         return true;
     }
 
     if (!window) {
-        Logger::error("InputManager::initialize - window is null");
+        Logger::error() << "InputManager::initialize - window is null";
         return false;
     }
 
@@ -37,7 +37,7 @@ bool InputManager::initialize(GLFWwindow* window) {
     glfwGetCursorPos(window, &x, &y);
     m_mousePos = m_lastMousePos = glm::vec2(static_cast<float>(x), static_cast<float>(y));
 
-    Logger::info(std::format("First frame mouse position: ({:.2f}, {:.2f})", m_mousePos.x, m_mousePos.y));
+    Logger::info() << std::format("First frame mouse position: ({:.2f}, {:.2f})", m_mousePos.x, m_mousePos.y);
 
     m_initialized = true;
     return true;
@@ -60,7 +60,7 @@ void InputManager::shutdown() {
     m_window = nullptr;
     m_initialized = false;
 
-    Logger::info("InputManager destroyGLFWwindow complete");
+    Logger::info() << "InputManager destroyGLFWwindow complete";
 }
 
 void InputManager::update() {

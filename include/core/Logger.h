@@ -6,6 +6,8 @@
 #define LOGGER_H
 
 #include <string>
+#include <sstream>
+#include <mutex>
 
 enum class LogLevel {
     None,
@@ -23,28 +25,45 @@ public:
     static void setLevel(LogLevel level);
     static LogLevel getLevel();
 
-    static void sendLogo();
+    class LogStream;
 
-    static void log(LogLevel level, const std::string& message);
-
-    static void trace(const std::string& message);
-    static void debug(const std::string& message);
-    static void info(const std::string& message);
-    static void success(const std::string& message);
-    static void warn(const std::string& message);
-    static void error(const std::string &message);
-    static void fatal(const std::string &message);
-
-    static void separator();
-    static void separator(const std::string& message);
+    static LogStream trace();
+    static LogStream debug();
+    static LogStream info();
+    static LogStream success();
+    static LogStream warn();
+    static LogStream error();
+    static LogStream fatal();
 
 private:
     static const int SeparatorWidth;
     static const std::string SeparatorString;
     static LogLevel currentLevel;
+    static std::mutex mtx;
 
+    static void log(LogLevel level, const std::string &message);
     static std::string getColor(LogLevel level);
     static std::string getHeader(LogLevel level);
 };
+
+class Logger::LogStream {
+public:
+    LogStream(LogLevel level)
+            : level(level) {}
+
+    ~LogStream() {
+        Logger::log(level, ss.str());
+    }
+
+    template <typename T>
+    LogStream& operator<<(const T& val) {
+        ss << val;
+        return *this;
+    }
+private:
+    LogLevel level;
+    std::ostringstream ss;
+};
+
 
 #endif //LOGGER_H

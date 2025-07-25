@@ -114,14 +114,6 @@ void World::forEachChunk(const std::function<void(const ChunkCoord &, Chunk *)> 
         func(coord, chunk.get());
 }
 
-inline void printProgressBar(float progress, int barWidth = 40) {
-    int filled = static_cast<int>(progress * barWidth);
-    std::cout << '\r' << '[';
-    for (int i = 0; i < barWidth; ++i)
-        std::cout << (i < filled ? '=' : (i == filled ? '>' : ' '));
-    std::cout << "] " << static_cast<int>(progress * 100.0f) << " %" << std::flush;
-}
-
 void World::generateArea(const glm::ivec3 &startPos, const glm::ivec3 &endPos) {
     for (auto& [coord, chunk] : m_chunks)
         chunk->fill(voxel::AIR);
@@ -139,8 +131,7 @@ void World::generateArea(const glm::ivec3 &startPos, const glm::ivec3 &endPos) {
                 ++current;
 
                 float progress = static_cast<float>(current) / total;
-                printProgressBar(progress);
+                Logger::info() << "Generation Percent: " << progress * 100 << "%";
             }
-
-    std::cout << std::endl;
+    Logger::info();
 }

@@ -11,6 +11,7 @@
 #include "IMesh.h"
 #include "Shader.h"
 #include "math/Color.h"
+#include "Camera.h"
 
 enum class PolygonMode {
     Fill,
@@ -34,12 +35,13 @@ public:
     void beginFrame();
     void endFrame();
 
+    void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
     void setClearColor(const Color& color);
     void clear();
-    void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
 
     void setViewProjection(const glm::mat4& view, const glm::mat4& projection);
-    void setShader(std::shared_ptr<Shader> shader);
+    void setShader(Shader* shader);
+    void setCamera(Camera* camera);
 
     void drawMesh(const IMesh& mesh, const glm::mat4& modelMatrix);
 
@@ -48,9 +50,8 @@ public:
 private:
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
-    std::shared_ptr<Shader> currentShader;
+    Shader* currentShader;
+    Camera* currentCamera;
 };
-
-#include "Renderer.inl"
 
 #endif //PIXLENGINE_RENDERER_H

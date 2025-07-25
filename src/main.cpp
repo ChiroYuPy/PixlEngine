@@ -9,18 +9,18 @@ int main() {
     Application& app = Application::get();
 
     if (!app.initialize()) {
-        Logger::error("Failed to initialize application");
+        Logger::error() << "Failed to initialize application";
         return -1;
     }
 
     app.getSceneManager()->registerScene<ChunkScene>("chunk");
     if (!app.getSceneManager()->loadScene("chunk")) {
-        Logger::error("Failed to load voxelEngine scene");
+        Logger::error() << "Failed to load voxelEngine scene";
         app.shutdown();
         return -1;
     }
 
-    Logger::success("Starting voxel Engine...");
+    Logger::success() << "Starting voxel Engine...";
     app.run();
     app.shutdown();
 
