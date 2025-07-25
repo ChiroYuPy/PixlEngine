@@ -14,7 +14,7 @@ public:
 
     static void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
 
-    static void setClearColor(float r, float g, float b, float a = 1.0f);
+    static void setClearColor(float r, float g, float b, float a);
 
     static void clear();
 

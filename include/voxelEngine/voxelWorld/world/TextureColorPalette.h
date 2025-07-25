@@ -7,10 +7,11 @@
 
 #include <array>
 #include "GLT.h"
+#include "voxelEngine/voxelWorld/voxel/VoxelType.h"
 
 class TextureColorPalette {
 public:
-    static constexpr size_t MAX_COLORS = 255;
+    static constexpr voxel::ID MAX_COLORS = 255;
 
     TextureColorPalette();
     ~TextureColorPalette();
