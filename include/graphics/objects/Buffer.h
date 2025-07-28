@@ -22,7 +22,7 @@ public:
     void bind() const;
     void unbind() const;
 
-    void uploadData(const void* data, size_t size, GLenum usage);
+    void uploadData(const void* data, size_t size, GLenum usage) const;
 
     GLuint getID() const { return id; }
 

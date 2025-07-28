@@ -33,7 +33,7 @@ void Buffer::unbind() const {
     glBindBuffer(target, 0);
 }
 
-void Buffer::uploadData(const void* data, size_t size, GLenum usage) {
+void Buffer::uploadData(const void* data, size_t size, GLenum usage) const {
     bind();
-    glBufferData(target, size, data, usage);
+    glBufferData(target, static_cast<GLsizeiptr>(size), data, usage);
 }

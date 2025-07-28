@@ -8,7 +8,7 @@
 #include "voxelEngine/voxelWorld/chunk/Chunk.h"
 #include "core/Logger.h"
 
-constexpr unsigned int RENDER_DISTANCE = 1;
+constexpr unsigned int RENDER_DISTANCE = 3;
 constexpr unsigned int RENDER_HEIGHT = 1;
 
 bool ChunkScene::initialize() {
